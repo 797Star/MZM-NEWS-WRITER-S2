@@ -2,5 +2,8 @@
   "dependencies": {
     "pdfjs-dist": "^4.0.379",
     "mammoth": "^1.6.0"
+  },
+  "scripts": {
+    "dev": "vite"
   }
 }
