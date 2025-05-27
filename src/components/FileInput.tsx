@@ -1,7 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { UI_STRINGS_MY } from '../constants';
-import pdfParse from 'pdf-parse'; 
+import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
+
+// Initialize PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface FileInputProps {
   onFileProcessed: (content: string) => void;
@@ -30,8 +33,19 @@ const FileInput: React.FC<FileInputProps> = ({ onFileProcessed, onError }) => {
           });
         } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
           const arrayBuffer = await file.arrayBuffer();
-          const data = await pdfParse(arrayBuffer as any); 
-          textContent = data.text;
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          const textContents = [];
+          
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            const pageText = content.items
+              .map((item: any) => item.str)
+              .join(' ');
+            textContents.push(pageText);
+          }
+          
+          textContent = textContents.join('\n');
         } else if (
             file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
             file.name.toLowerCase().endsWith('.docx')
