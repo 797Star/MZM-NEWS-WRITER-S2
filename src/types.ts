@@ -1,3 +1,6 @@
+// src/types.ts or src/types/index.ts
+export interface GroundingChunk {
+  
 export enum InputMode {
   FILE = 'file',
   URL = 'url',
@@ -36,3 +39,10 @@ export interface GeneratedScriptResponse {
   intermediateTranslation?: string;
   sources?: GroundingChunk[];
 }
+  web?: {
+  uri?: string;
+  title?: string;
+  };
+}
+
+  
