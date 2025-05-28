@@ -6,13 +6,13 @@
 // Get API key from environment variables
 export const getApiKey = (): string => {
   // Check for Vite environment variables
-  const viteApiKey = import.meta.env.VITE_API_KEY;
+  const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
   // Check for window-injected variables (fallback for environments without proper env var support)
-  const windowApiKey = (window as any).API_KEY;
+  const windowApiKey = (window as any).VITE_GEMINI_API_KEY;
   
   // Return the first available API key
-  return viteApiKey || windowApiKey || '';
+  return geminiApiKey || windowApiKey || '';
 };
 
 // Check if API key exists and is valid

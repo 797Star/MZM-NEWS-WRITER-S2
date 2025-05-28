@@ -8,7 +8,9 @@ export enum InputMode {
 export enum ScriptLength {
   SHORT = 'short',
   STANDARD = 'standard',
-  DETAILED = 'detailed'
+  DETAILED = 'detailed',
+  FEATURE = "FEATURE",
+  ANALYTICAL = "ANALYTICAL"
 }
 
 export enum ScriptTone {
