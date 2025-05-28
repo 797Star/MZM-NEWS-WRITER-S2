@@ -27,6 +27,7 @@ export enum ScriptType {
 export interface WebSource {
   uri: string;
   title: string;
+  content: string;
 }
 
 export interface GroundingChunk {
