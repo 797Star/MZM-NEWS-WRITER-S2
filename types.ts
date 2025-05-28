@@ -1,4 +1,3 @@
-
 export enum InputMode {
   FILE = 'FILE',
   URL = 'URL',
@@ -27,7 +26,7 @@ export enum ScriptType {
 export interface WebSource {
   uri: string;
   title: string;
-  content: string;
+  content: string; // Added to support content field
 }
 
 export interface GroundingChunk {
