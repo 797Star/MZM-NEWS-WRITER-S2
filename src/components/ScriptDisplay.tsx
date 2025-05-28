@@ -43,16 +43,16 @@ const ScriptDisplay: React.FC<ScriptDisplayProps> = ({ script, sources }) => {
           <h3 className="font-serif text-xl font-semibold text-neutral-700 mb-2">{UI_STRINGS_MY.SOURCES_HEADING}</h3>
           <ul className="list-disc list-inside space-y-1 font-serif text-sm">
             {sources.map((source, index) =>
-              source.web && source.web.uri ? (
+              source.web && source.web.url ? (
                 <li key={index} className="text-neutral-600">
                   <a
-                    href={source.web.uri}
+                    href={source.web.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sky-700 hover:text-sky-800 hover:underline"
-                    title={source.web.title || source.web.uri}
+                    title={source.web.title || source.web.url}
                   >
-                    {source.web.title || source.web.uri}
+                    {source.web.title || source.web.url}
                   </a>
                 </li>
               ) : null
