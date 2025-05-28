@@ -26,11 +26,11 @@ export enum ScriptType {
 }
 
 export interface GroundingChunk {
+  content?: string;
   web?: {
-    content: string;
     url?: string;
     title?: string;
-  };  
+  };
 }
 
 export interface GeneratedScriptResponse {
