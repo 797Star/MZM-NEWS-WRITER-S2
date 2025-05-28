@@ -27,9 +27,9 @@ export enum ScriptType {
 
 export interface GroundingChunk {
   web?: {
-  content: string;
-  url?: string;
-  title?: string;
+    content: string;
+    url?: string;
+    title?: string;
   };  
 }
 
@@ -38,5 +38,3 @@ export interface GeneratedScriptResponse {
   intermediateTranslation?: string;
   sources?: GroundingChunk[];
 }
-
-  
