@@ -1,6 +1,7 @@
 export const DEBOUNCE_DELAY = 500; // ms
 
 export const UI_STRINGS_MY = {
+  GENERATED_SCRIPT_HEADING: "Your Heading Here",
   // App Title
   APP_TITLE: 'သတင်းရေးသားခြင်းထောက်ကူစနစ်',
   
