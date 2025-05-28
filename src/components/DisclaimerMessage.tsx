@@ -1,11 +1,21 @@
 import React from 'react';
-import { UI_STRINGS_MY } from '../constants';
 
 const DisclaimerMessage: React.FC = () => {
   return (
-    <div className="max-w-4xl mx-auto my-6 p-4 bg-stone-100 border-l-4 border-stone-500 text-stone-800 rounded-sm shadow" role="region" aria-labelledby="disclaimer-heading">
-      <h3 id="disclaimer-heading" className="font-semibold font-serif text-stone-900">{UI_STRINGS_MY.DISCLAIMER_HEADING}</h3>
-      <p className="text-sm mt-1 font-serif">{UI_STRINGS_MY.DISCLAIMER_CONTENT}</p>
+    <div className="w-full flex justify-center mt-8 mb-2">
+      <div
+        className="bg-stone-50 border border-stone-200 rounded-sm px-4 py-2 shadow-sm"
+        style={{ maxWidth: 600 }}
+        role="note"
+        aria-label="disclaimer"
+      >
+        <p
+          className="text-xs text-neutral-500 text-center italic font-serif leading-relaxed"
+          style={{ fontSize: '0.85rem', lineHeight: '1.5' }}
+        >
+          သတင်းပါ အချက်အလက်များသည် <span className="font-semibold text-neutral-600">Google Fact Check</span> နှင့် <span className="font-semibold text-neutral-600">AP Fact Check</span> တို့မှ စစ်ဆေးအတည်ပြုပြီးသော အချက်အလက်များအပေါ် အခြေခံပါသည်။
+        </p>
+      </div>
     </div>
   );
 };
