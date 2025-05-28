@@ -9,9 +9,9 @@ interface ScriptLengthSelectorProps {
 
 const ScriptLengthSelector: React.FC<ScriptLengthSelectorProps> = ({ selectedLength, onLengthChange }) => {
   const lengthOptions = [
-    { value: ScriptLength.STANDARD, label: UI_STRINGS_MY.SCRIPT_LENGTH_STANDARD },
-    { value: ScriptLength.ONE_MINUTE, label: UI_STRINGS_MY.SCRIPT_LENGTH_ONE_MINUTE },
-    { value: ScriptLength.FIVE_MINUTES, label: UI_STRINGS_MY.SCRIPT_LENGTH_FIVE_MINUTES },
+    { value: ScriptLength.SHORT, label: UI_STRINGS_MY.LENGTH_SHORT },
+    { value: ScriptLength.STANDARD, label: UI_STRINGS_MY.LENGTH_STANDARD },
+    { value: ScriptLength.DETAILED, label: UI_STRINGS_MY.LENGTH_DETAILED },
   ];
 
   return (

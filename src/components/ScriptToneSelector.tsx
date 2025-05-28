@@ -9,10 +9,9 @@ interface ScriptToneSelectorProps {
 
 const ScriptToneSelector: React.FC<ScriptToneSelectorProps> = ({ selectedTone, onToneChange }) => {
   const toneOptions = [
-    { value: ScriptTone.FORMAL, label: UI_STRINGS_MY.SCRIPT_TONE_FORMAL },
-    { value: ScriptTone.FRIENDLY, label: UI_STRINGS_MY.SCRIPT_TONE_FRIENDLY },
-    { value: ScriptTone.URGENT, label: UI_STRINGS_MY.SCRIPT_TONE_URGENT },
-    { value: ScriptTone.INVESTIGATIVE, label: UI_STRINGS_MY.SCRIPT_TONE_INVESTIGATIVE },
+    { value: ScriptTone.FORMAL, label: UI_STRINGS_MY.TONE_FORMAL },
+    { value: ScriptTone.CONVERSATIONAL, label: UI_STRINGS_MY.TONE_CONVERSATIONAL },
+    { value: ScriptTone.SIMPLIFIED, label: UI_STRINGS_MY.TONE_SIMPLIFIED },
   ];
 
   return (

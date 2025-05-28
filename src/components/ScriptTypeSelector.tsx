@@ -9,8 +9,9 @@ interface ScriptTypeSelectorProps {
 
 const ScriptTypeSelector: React.FC<ScriptTypeSelectorProps> = ({ selectedType, onTypeChange }) => {
   const typeOptions = [
-    { value: ScriptType.WEB_POST, label: UI_STRINGS_MY.SCRIPT_TYPE_WEB_POST },
-    { value: ScriptType.VIDEO_POST, label: UI_STRINGS_MY.SCRIPT_TYPE_VIDEO_POST },
+    { value: ScriptType.WEB_POST, label: UI_STRINGS_MY.TYPE_WEB_POST },
+    { value: ScriptType.NEWS_SCRIPT, label: UI_STRINGS_MY.TYPE_NEWS_SCRIPT },
+    { value: ScriptType.SOCIAL_MEDIA, label: UI_STRINGS_MY.TYPE_SOCIAL_MEDIA },
   ];
 
   return (

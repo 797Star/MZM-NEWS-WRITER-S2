@@ -1,3 +1,32 @@
+// app.js
+
+require('dotenv').config();
+
+// ... existing code ...
+
+const apiUrl = process.env.API_URL;
+const apiKey = process.env.API_KEY;
+
+// Use apiUrl and apiKey in your API requests
+
+// Example of making an API request
+const fetch = require('node-fetch');
+
+async function fetchData() {
+  const response = await fetch(`${apiUrl}/data`, {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`
+    }
+  });
+  const data = await response.json();
+  console.log(data);
+}
+
+fetchData();
+
+// ... existing code ...
+API_URL=https://your-api-endpoint.com
+API_KEY=your-api-key
 name: NodeJS with Gulp
 
 on:
