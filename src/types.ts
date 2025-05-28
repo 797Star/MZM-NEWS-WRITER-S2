@@ -27,7 +27,10 @@ export enum ScriptType {
 
 export interface GroundingChunk {
   content?: string;
+  url?: string;
+  title?: string;
   web?: {
+    content: string;
     url?: string;
     title?: string;
   };
