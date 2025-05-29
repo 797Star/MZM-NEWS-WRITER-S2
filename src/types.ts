@@ -1,28 +1,28 @@
 export enum InputMode {
-  FILE = 'file',
-  URL = 'url',
-  KEYWORDS = 'keywords',
-  TRANSLATE_DEVELOP = 'translate_develop'
+  FILE = 'FILE',
+  URL = 'URL',
+  KEYWORDS = 'KEYWORDS',
+  TRANSLATE_DEVELOP = 'TRANSLATE_DEVELOP'
 }
 
 export enum ScriptLength {
-  SHORT = 'short',
-  STANDARD = 'standard',
-  DETAILED = 'detailed',
-  FEATURE = "FEATURE",
-  ANALYTICAL = "ANALYTICAL"
+  SHORT = 'SHORT',
+  STANDARD = 'STANDARD',
+  DETAILED = 'DETAILED',
+  FEATURE = 'FEATURE',
+  ANALYTICAL = 'ANALYTICAL'
 }
 
 export enum ScriptTone {
-  FORMAL = 'formal',
-  CONVERSATIONAL = 'conversational',
-  SIMPLIFIED = 'simplified'
+  FORMAL = 'FORMAL',
+  CONVERSATIONAL = 'CONVERSATIONAL',
+  SIMPLIFIED = 'SIMPLIFIED'
 }
 
 export enum ScriptType {
-  WEB_POST = 'web_post',
-  NEWS_SCRIPT = 'news_script',
-  SOCIAL_MEDIA = 'social_media'
+  WEB_POST = 'WEB_POST',
+  NEWS_SCRIPT = 'NEWS_SCRIPT',
+  SOCIAL_MEDIA = 'SOCIAL_MEDIA'
 }
 
 export interface GroundingChunk {
