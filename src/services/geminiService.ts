@@ -60,10 +60,19 @@ interface NewsApiArticle {
 }
 
 const fetchNewsArticles = async (query: string): Promise<{ content: string; sources: GroundingChunk[] }> => {
+  // Use a public CORS proxy for browser compatibility (development only)
+  const corsProxy = 'https://api.allorigins.win/raw?url=';
   const url = `${NEWS_API_BASE_URL}/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&pageSize=5&apiKey=${NEWS_API_KEY}`;
-  const response = await fetch(url);
+  const proxiedUrl = corsProxy + encodeURIComponent(url);
+  const response = await fetch(proxiedUrl);
   if (!response.ok) {
-    throw new Error('Failed to fetch news articles');
+    // Try to provide more error details if available
+    let errorMsg = 'Failed to fetch news articles';
+    try {
+      const errorText = await response.text();
+      errorMsg += `: ${errorText}`;
+    } catch {}
+    throw new Error(errorMsg);
   }
   const data = await response.json();
   if (data.articles && data.articles.length > 0) {
@@ -81,7 +90,8 @@ const fetchNewsArticles = async (query: string): Promise<{ content: string; sour
       sources,
     };
   }
-  return { content: 'No news articles found.', sources: [] };
+  // If no articles found, return a more user-friendly error message
+  throw new Error('မည်သည့်အင်္ဂလိပ်သတင်းအကြောင်းအရာမှ မတွေ့ရှိပါ။\n\nကျေးဇူးပြု၍ သတင်းအကြောင်းအရာ (keywords သို့မဟုတ် URL) ကို ပိုမိုတိကျစွာ ထည့်သွင်းပါ။');
 };
 
 // Helper to build Gemini prompt for Burmese translation and writing
@@ -139,8 +149,8 @@ const fetchBurmeseNewsContent = async (url: string): Promise<{ content: string; 
     const match = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
     const body = match ? match[1] : html;
     // Remove scripts/styles and HTML tags
-    const cleaned = body.replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
+    const cleaned = body.replace(/<script[\sS]*?<\/script>/gi, '')
+      .replace(/<style[\sS]*?<\/style>/gi, '')
       .replace(/<[^>]+>/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
@@ -330,13 +340,61 @@ ${burmeseKeywords}
 // Function to perform translation and script generation (deprecated, now uses NewsAPI for facts)
 export const performTranslationAndScriptGeneration = async (
   englishUrl: string,
-  length: ScriptLength,
-  tone: ScriptTone,
-  type: ScriptType
+  _length: ScriptLength, // unused but kept for API compatibility
+  _tone: ScriptTone,     // unused but kept for API compatibility
+  _type: ScriptType      // unused but kept for API compatibility
 ): Promise<GeneratedScriptResponse> => {
-  // Use NewsAPI for fact gathering
-  const { content: newsContent, sources } = await fetchNewsArticles(englishUrl);
-  const prompt = buildGeminiPrompt(newsContent, length, tone, type);
+  // 1. Fetch the raw article content from the English news URL
+  const corsProxy = 'https://api.allorigins.win/raw?url=';
+  let articleContent = '';
+  let sources: GroundingChunk[] = [];
+  try {
+    const response = await fetch(corsProxy + encodeURIComponent(englishUrl));
+    if (!response.ok) {
+      // Try fallback: fetch without proxy (for local dev or CORS-free URLs)
+      try {
+        const fallbackResponse = await fetch(englishUrl);
+        if (fallbackResponse.ok) {
+          const html = await fallbackResponse.text();
+          const match = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+          const body = match ? match[1] : html;
+          articleContent = body.replace(/<script[\sS]*?<\/script>/gi, '')
+            .replace(/<style[\sS]*?<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          sources = [{ content: articleContent, url: englishUrl, title: englishUrl }];
+        } else {
+          throw new Error('Both proxy and direct fetch failed.');
+        }
+      } catch {
+        throw new Error('Failed to fetch the news article from the provided URL (proxy and direct fetch failed).');
+      }
+    } else {
+      const html = await response.text();
+      const match = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      const body = match ? match[1] : html;
+      articleContent = body.replace(/<script[\sS]*?<\/script>/gi, '')
+        .replace(/<style[\sS]*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      sources = [{ content: articleContent, url: englishUrl, title: englishUrl }];
+    }
+  } catch (e) {
+    throw new Error('Failed to fetch or parse the English news article. Please check the URL or try a different one.');
+  }
+  if (!articleContent || articleContent.length < 100) {
+    throw new Error('The fetched news article is empty or too short. Please provide a valid English news article URL.');
+  }
+  // 2. Compose a prompt for Gemini to translate and rewrite in Burmese news reporting tone, web post structure
+  let prompt = `Translate the following English news article into Burmese language in a news reporting tone, using a web post structure. Do not add any new information. Use only the original facts.\n\n---\n\n${articleContent}`;
+
+  // If user selected "conversation" tone or "NEWS_SCRIPT" type, force narration tone for newscaster
+  if (_tone === 'CONVERSATIONAL' || _type === 'NEWS_SCRIPT') {
+    prompt = `Translate the following English news article into Burmese language in a narration tone suitable for a newscaster reporting the news. Use clear, formal, and engaging language as if reading the news on TV or radio. Do not add any new information. Use only the original facts.\n\n---\n\n${articleContent}`;
+  }
+
   const result = await makeGeminiRequest(prompt);
   return {
     script: result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '',
