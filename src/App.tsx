@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { InputMode, GeneratedScriptResponse, GroundingChunk, ScriptLength, ScriptTone, ScriptType } from './types';
-import { UI_STRINGS_MY, GEMINI_PROOFREADER_SYSTEM_INSTRUCTION } from './constants';
+import { UI_STRINGS_MY } from './constants';
 import InputSelector from './components/InputSelector';
 import FileInput from './components/FileInput';
 import UrlInput from './components/UrlInput';
@@ -20,13 +20,6 @@ import {
   proofreadScriptWithAI,
 } from './services/geminiService';
 import { getApiKey, isApiKeyValid } from './services/envConfig';
-import {
-  BUTTON_PROOFREAD_AI,
-  SECTION_TITLE_EDITED_SCRIPT,
-  BUTTON_DOWNLOAD_EDITED_SCRIPT,
-  MESSAGE_PROOFREADING_LOADING,
-  ERROR_PROOFREADING
-} from './constants';
 
 const App: React.FC = () => {
   const [apiKeyExists, setApiKeyExists] = useState<boolean>(false);
