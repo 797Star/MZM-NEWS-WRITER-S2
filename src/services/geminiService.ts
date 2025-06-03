@@ -1,4 +1,5 @@
 import { ScriptLength, ScriptTone, ScriptType, GeneratedScriptResponse, GroundingChunk } from '../types';
+import { getApiKey } from '../services/envConfig';
 
 // Base URL for the Gemini API
 const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -11,7 +12,7 @@ const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
 // Helper function to get API URL with key
 const getApiUrl = (): string => {
   // Use the new API key directly as requested
-  const apiKey = 'AIzaSyAkBSIMLzoQ7kioG75C4lXf1Ww_HjerGkk';
+  const apiKey = getApiKey();
   return `${GEMINI_API_BASE_URL}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 };
 
