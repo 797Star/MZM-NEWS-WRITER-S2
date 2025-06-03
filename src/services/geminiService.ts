@@ -1,5 +1,6 @@
 import { ScriptLength, ScriptTone, ScriptType, GeneratedScriptResponse, GroundingChunk } from '../types';
 import { getApiKey } from '../services/envConfig';
+import { GEMINI_PROOFREADER_SYSTEM_INSTRUCTION } from '../constants';
 
 // Base URL for the Gemini API
 const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
@@ -179,6 +180,33 @@ export const generateScriptFromFileContent = async (
     sources,
     intermediateTranslation: undefined
   };
+};
+
+// Function to proofread a script using AI
+export const proofreadScriptWithAI = async (originalScript: string): Promise<string> => {
+  const prompt = `${GEMINI_PROOFREADER_SYSTEM_INSTRUCTION}
+
+Burmese news article to proofread:
+
+---
+${originalScript}`;
+
+  try {
+    const result = await makeGeminiRequest(prompt);
+    const proofreadScript = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (proofreadScript) {
+      return proofreadScript;
+    } else {
+      // Log the actual response if the expected part is missing
+      console.error('Error extracting proofread script from Gemini response. Response:', JSON.stringify(result, null, 2));
+      throw new Error('Failed to extract proofread script from AI response.');
+    }
+  } catch (error) {
+    console.error('Error proofreading script with AI:', error);
+    // Depending on how you want to handle errors, you could re-throw, or return a specific error indicator
+    // For now, re-throwing to let the caller handle it.
+    throw error;
+  }
 };
 
 // Function to generate script from Burmese news URL (for video, narrative, Burmese only, no invented facts)
