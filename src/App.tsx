@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { InputMode, GeneratedScriptResponse, GroundingChunk, ScriptLength, ScriptTone, ScriptType } from './types';
-import { UI_STRINGS_MY } from './constants';
+import { UI_STRINGS_MY, GEMINI_PROOFREADER_SYSTEM_INSTRUCTION } from './constants';
 import InputSelector from './components/InputSelector';
 import FileInput from './components/FileInput';
 import UrlInput from './components/UrlInput';
@@ -16,9 +16,17 @@ import {
   generateScriptFromFileContent,
   generateScriptFromUrl,
   generateScriptFromKeywords,
-  performTranslationAndScriptGeneration, 
+  performTranslationAndScriptGeneration,
+  proofreadScriptWithAI,
 } from './services/geminiService';
 import { getApiKey, isApiKeyValid } from './services/envConfig';
+import {
+  BUTTON_PROOFREAD_AI,
+  SECTION_TITLE_EDITED_SCRIPT,
+  BUTTON_DOWNLOAD_EDITED_SCRIPT,
+  MESSAGE_PROOFREADING_LOADING,
+  ERROR_PROOFREADING
+} from './constants';
 
 const App: React.FC = () => {
   const [apiKeyExists, setApiKeyExists] = useState<boolean>(false);
@@ -39,6 +47,11 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // State for proofreading
+  const [proofreadScript, setProofreadScript] = useState<string | null>(null);
+  const [isProofreading, setIsProofreading] = useState<boolean>(false);
+  const [proofreadingError, setProofreadingError] = useState<string | null>(null);
+
   useEffect(() => {
     const checkApiKey = () => {
       const apiKey = getApiKey();
@@ -58,6 +71,10 @@ const App: React.FC = () => {
     setIntermediateTranslation(null);
     setGroundingSources(null);
     setError(null);
+    // Reset proofreading states
+    setProofreadScript(null);
+    setIsProofreading(false);
+    setProofreadingError(null);
   }, []);
 
   const handleInputModeChange = useCallback((mode: InputMode) => {
@@ -229,7 +246,37 @@ const App: React.FC = () => {
     const blob = new Blob([generatedScript], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `myanmar_news_script_${new Date().toISOString().slice(0,10)}.txt`;
+    link.download = `myanmar_news_script_${new Date().toISOString().slice(0, 10)}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  };
+
+  const handleProofreadScript = async () => {
+    if (!generatedScript) return;
+
+    setIsProofreading(true);
+    setProofreadingError(null);
+    setProofreadScript(null); // Clear previous results
+
+    try {
+      const result = await proofreadScriptWithAI(generatedScript);
+      setProofreadScript(result);
+    } catch (e: any) {
+      console.error("Proofreading error:", e);
+      setProofreadingError(UI_STRINGS_MY.ERROR_PROOFREADING + (e.message ? `: ${e.message}` : ''));
+    } finally {
+      setIsProofreading(false);
+    }
+  };
+
+  const handleDownloadEditedScript = () => {
+    if (!proofreadScript) return;
+    const blob = new Blob([proofreadScript], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `edited_script_${new Date().toISOString().slice(0, 10)}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -325,7 +372,21 @@ const App: React.FC = () => {
               </div>
             )}
             {generatedScript ? (
-                 <ScriptDisplay script={generatedScript} sources={groundingSources || undefined} />
+              <>
+                <ScriptDisplay script={generatedScript} sources={groundingSources || undefined} />
+                {!isLoading && (
+                  <div className="mt-6 text-center">
+                    <button
+                      onClick={handleProofreadScript}
+                      disabled={isProofreading || !generatedScript}
+                      className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold py-3 px-8 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-base"
+                      aria-label={UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
+                    >
+                      {UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
                 !isLoading && !error && 
                 (selectedInputMode !== InputMode.FILE || fileContent) &&
@@ -334,7 +395,31 @@ const App: React.FC = () => {
                     {UI_STRINGS_MY.NO_SCRIPT_YET}
                 </div>
             )}
-            {generatedScript && (
+
+            {isProofreading && <LoadingSpinner message={UI_STRINGS_MY.MESSAGE_PROOFREADING_LOADING} />}
+            {proofreadingError && <ErrorMessage message={proofreadingError} />}
+
+            {proofreadScript && !isProofreading && (
+              <div className="mt-8 p-6 bg-purple-50 rounded-none border border-purple-200">
+                <h2 className="font-serif text-2xl font-bold text-purple-800 mb-4 pb-2 border-b border-purple-300">{UI_STRINGS_MY.SECTION_TITLE_EDITED_SCRIPT}</h2>
+                {/* Remember to define .edited-script-display in index.css: e.g., background-color: #f3e8ff; border-left: 4px solid #800080; padding: 10px; */}
+                <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap edited-script-display">
+                  {proofreadScript}
+                </div>
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={handleDownloadEditedScript}
+                    disabled={!proofreadScript}
+                    className="bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-6 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm"
+                    aria-label={UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
+                  >
+                    {UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {generatedScript && !proofreadScript && !isProofreading && ( // Show original download button only if not yet proofread or currently proofreading
               <div className="mt-8 text-center">
                 <button
                     onClick={downloadScript}
@@ -351,6 +436,15 @@ const App: React.FC = () => {
       <footer className="text-center mt-12 py-6 border-t border-neutral-300">
         <p className="text-sm text-neutral-500 font-serif">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p>
       </footer>
+      {/* CSS class definition reminder:
+        .edited-script-display {
+          background-color: #f3e8ff; // A light purple background
+          border-left: 4px solid #800080; // Purple left border
+          padding: 10px;
+          white-space: pre-wrap; // Preserve formatting
+          font-family: 'Myanmar3', 'Padauk', sans-serif; // Ensure consistent font
+        }
+      */}
     </div>
   );
 };

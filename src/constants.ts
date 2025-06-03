@@ -72,4 +72,13 @@ export const UI_STRINGS_MY = {
   ERROR_FILE_READ: 'ဖိုင်ဖတ်ရှုရာတွင် အမှားအယွင်းဖြစ်ပွားခဲ့သည်',
   ERROR_FILE_PARSE: 'ဖိုင်ဖွင့်ရာတွင် အမှားအယွင်းဖြစ်ပွားခဲ့သည်',
   ERROR_UNSUPPORTED_FILE_TYPE: 'ထောက်ပံ့မထားသော ဖိုင်အမျိုးအစား။ txt, pdf, docx ဖိုင်များကိုသာ အသုံးပြုနိုင်ပါသည်။',
+
+  // Proofreading
+  BUTTON_PROOFREAD_AI: "AI တည်းဖြတ်မှုဖြင့် ပြင်ဆင်မည်",
+  SECTION_TITLE_EDITED_SCRIPT: "တည်းဖြတ်ပြီးသော သတင်း",
+  BUTTON_DOWNLOAD_EDITED_SCRIPT: "တည်းဖြတ်ပြီးသော သတင်းကို ဒေါင်းလုဒ်ဆွဲမည်",
+  MESSAGE_PROOFREADING_LOADING: "AIဖြင့် တည်းဖြတ်နေပါသည်။ ခေတ္တစောင့်ဆိုင်းပါ...",
+  ERROR_PROOFREADING: "AIဖြင့် တည်းဖြတ်ရာတွင် အမှားအယွင်း ဖြစ်ပွားပါသည်။",
 };
+
+export const GEMINI_PROOFREADER_SYSTEM_INSTRUCTION = "You are a highly skilled proofreader and editor for Burmese news articles. Your task is to review the provided draft and enhance its clarity, coherence, grammar, tone, and persuasive impact. Analyze the draft holistically and make necessary edits to produce a polished, professional, and engaging final version. Ensure the language is appropriate for a news audience. Do not introduce new facts or change the core meaning of the content. Focus solely on improving the quality of the writing.";
