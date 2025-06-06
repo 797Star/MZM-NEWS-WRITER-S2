@@ -43,26 +43,16 @@ const LoginScreen: React.FC = () => {
       }
     } catch (e) {
       const authError = e as AuthError;
-      setError(authError.message);
+      if (!isSignUp && authError.message === "Invalid login credentials") {
+        setError("Incorrect email or password. Please try again.");
+      } else if (!isSignUp && authError.message === "Email not confirmed") {
+        setError("Your email address has not been confirmed. Please check your inbox.");
+      } else {
+        // For sign-up errors or other sign-in errors, you can use the default message or a generic one
+        setError(authError.message || "An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
-      if (oauthError) throw oauthError;
-      // OAuth flow will redirect; onAuthStateChange in App.tsx will handle it
-    } catch (e) {
-      const authError = e as AuthError;
-      setError(authError.message);
-    } finally {
-      setIsLoading(false); // May not be reached if redirect happens quickly
     }
   };
 
@@ -129,21 +119,6 @@ const LoginScreen: React.FC = () => {
           </button>
         </div>
 
-        <div className="my-6 flex items-center">
-          <div className="flex-grow border-t border-neutral-300"></div>
-          <span className="mx-4 text-neutral-500 text-sm">OR</span>
-          <div className="flex-grow border-t border-neutral-300"></div>
-        </div>
-
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-neutral-300 rounded bg-white hover:bg-neutral-100 transition text-lg font-semibold text-neutral-800 shadow-sm disabled:opacity-70"
-          style={{ fontFamily: "Lora, Georgia, 'Times New Roman', Times, serif" }}
-        >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-6 w-6" />
-          Sign in with Google
-        </button>
       </div>
       <div className="mt-8 text-xs text-neutral-400 text-center">
         &copy; {new Date().getFullYear()} MZM News Writer
