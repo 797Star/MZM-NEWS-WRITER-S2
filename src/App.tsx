@@ -52,7 +52,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user: FirebaseUser | null) => {
       setCurrentUser(user);
       setIsLoadingAuth(false);
     });
