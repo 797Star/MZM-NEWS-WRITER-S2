@@ -9,6 +9,7 @@ const LoginScreen: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null); // For messages like 'Check your email'
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
 
   const handleEmailPasswordAuth = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -43,26 +44,44 @@ const LoginScreen: React.FC = () => {
       }
     } catch (e) {
       const authError = e as AuthError;
-      setError(authError.message);
+      if (!isSignUp && authError.message === "Invalid login credentials") {
+        setError("Incorrect email or password. Please try again.");
+      } else if (!isSignUp && authError.message === "Email not confirmed") {
+        setError("Your email address has not been confirmed. Please check your inbox.");
+      } else {
+        // For sign-up errors or other sign-in errors, you can use the default message or a generic one
+        setError(authError.message || "An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handlePasswordResetRequest = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!email) {
+      setError("Please enter your email address.");
+      return;
+    }
     setIsLoading(true);
     setError(null);
+    setMessage(null);
     try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+      // It's important to configure the redirect URL in your Supabase project settings under Authentication -> URL Configuration.
+      // The `redirectTo` path should point to the page in your app that handles password updates.
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/update-password', // Using window.location.origin to get the base URL
       });
-      if (oauthError) throw oauthError;
-      // OAuth flow will redirect; onAuthStateChange in App.tsx will handle it
+      if (resetError) throw resetError;
+      setMessage("If an account exists for this email, a password reset link has been sent. Please check your inbox (and spam folder).");
     } catch (e) {
       const authError = e as AuthError;
-      setError(authError.message);
+      console.error("Password reset error:", authError); // Keep a console log for debugging
+      // Avoid confirming if an email exists or not for security reasons in the message
+      setMessage("If an account exists for this email, a password reset link has been sent. Please check your inbox (and spam folder).");
+      // setError(authError.message); // Avoid showing specific errors like "User not found"
     } finally {
-      setIsLoading(false); // May not be reached if redirect happens quickly
+      setIsLoading(false);
     }
   };
 
@@ -73,10 +92,10 @@ const LoginScreen: React.FC = () => {
           MZM News Writer
         </h1>
         <p className="mb-6 text-center text-neutral-700" style={{ fontFamily: "Lora, Georgia, 'Times New Roman', Times, serif" }}>
-          {isSignUp ? 'Create an account' : 'Sign in to your account'}
+          {isForgotPassword ? 'Reset your password' : (isSignUp ? 'Create an account' : 'Sign in to your account')}
         </p>
 
-        <form onSubmit={handleEmailPasswordAuth}>
+        <form onSubmit={isForgotPassword ? handlePasswordResetRequest : handleEmailPasswordAuth}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
             <input
@@ -89,19 +108,21 @@ const LoginScreen: React.FC = () => {
               placeholder="you@example.com"
             />
           </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6} // Supabase default minimum password length
-              className="w-full px-3 py-2 border border-neutral-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
-              placeholder="••••••••"
-            />
-          </div>
+          {!isForgotPassword && (
+            <div className="mb-6">
+              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">Password</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6} // Supabase default minimum password length
+                className="w-full px-3 py-2 border border-neutral-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
+                placeholder="••••••••"
+              />
+            </div>
+          )}
 
           {error && <p className="mb-4 text-red-600 text-sm text-center">{error}</p>}
           {message && <p className="mb-4 text-green-600 text-sm text-center">{message}</p>}
@@ -112,38 +133,52 @@ const LoginScreen: React.FC = () => {
             disabled={isLoading}
             className="w-full py-2 px-4 bg-neutral-700 hover:bg-neutral-800 text-white font-semibold rounded shadow-md disabled:bg-neutral-400 transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2"
           >
-            {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+            {isLoading ? 'Processing...' : (isForgotPassword ? 'Send Reset Link' : (isSignUp ? 'Sign Up' : 'Sign In'))}
           </button>
         </form>
 
         <div className="mt-4 text-center">
-          <button
-            onClick={() => {
-              setIsSignUp(!isSignUp);
-              setError(null);
-              setMessage(null);
-            }}
-            className="text-sm text-neutral-600 hover:text-neutral-800 underline"
-          >
-            {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
-          </button>
+          {isForgotPassword ? (
+            <button
+              onClick={() => {
+                setIsForgotPassword(false);
+                setError(null);
+                setMessage(null);
+              }}
+              className="text-sm text-neutral-600 hover:text-neutral-800 underline"
+            >
+              Back to Sign In
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setError(null);
+                  setMessage(null);
+                }}
+                className="text-sm text-neutral-600 hover:text-neutral-800 underline"
+              >
+                {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+              </button>
+              {!isSignUp && ( // Only show 'Forgot Password?' if on the Sign In form
+                <div className="mt-2">
+                  <button
+                    onClick={() => {
+                      setIsForgotPassword(true);
+                      setError(null);
+                      setMessage(null);
+                    }}
+                    className="text-sm text-neutral-600 hover:text-neutral-800 underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
-        <div className="my-6 flex items-center">
-          <div className="flex-grow border-t border-neutral-300"></div>
-          <span className="mx-4 text-neutral-500 text-sm">OR</span>
-          <div className="flex-grow border-t border-neutral-300"></div>
-        </div>
-
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-neutral-300 rounded bg-white hover:bg-neutral-100 transition text-lg font-semibold text-neutral-800 shadow-sm disabled:opacity-70"
-          style={{ fontFamily: "Lora, Georgia, 'Times New Roman', Times, serif" }}
-        >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-6 w-6" />
-          Sign in with Google
-        </button>
       </div>
       <div className="mt-8 text-xs text-neutral-400 text-center">
         &copy; {new Date().getFullYear()} MZM News Writer

@@ -15,7 +15,7 @@ import ScriptToneSelector from './components/ScriptToneSelector';
 import ScriptTypeSelector from './components/ScriptTypeSelector';
 import DisclaimerMessage from './components/DisclaimerMessage';
 import LoginScreen from './components/LoginScreen';
-import UserProfile from './components/UserProfile'; // Re-integrate UserProfile
+import UserProfile from './components/UserProfile';
 import {
   generateScriptFromFileContent,
   generateScriptFromUrl,
@@ -24,6 +24,8 @@ import {
   proofreadScriptWithAI,
 } from './services/geminiService';
 import { getApiKey, isApiKeyValid } from './services/envConfig';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import UpdatePasswordScreen from './components/UpdatePasswordScreen';
 
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -46,7 +48,6 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // State for proofreading
   const [proofreadScript, setProofreadScript] = useState<string | null>(null);
   const [isProofreading, setIsProofreading] = useState<boolean>(false);
   const [proofreadingError, setProofreadingError] = useState<string | null>(null);
@@ -61,7 +62,6 @@ const App: React.FC = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-        // You might set isLoadingAuth to false here too if events imply loading is done
       }
     );
 
@@ -89,7 +89,6 @@ const App: React.FC = () => {
     setIntermediateTranslation(null);
     setGroundingSources(null);
     setError(null);
-    // Reset proofreading states
     setProofreadScript(null);
     setIsProofreading(false);
     setProofreadingError(null);
@@ -149,7 +148,6 @@ const App: React.FC = () => {
     resetOutputs(); 
   }, [resetOutputs]);
 
-
   const validateInputs = (): boolean => {
     let currentError: string | null = null;
     const checkUrl = (inputUrl: string) : boolean => {
@@ -203,9 +201,7 @@ const App: React.FC = () => {
     if (!validateInputs()) {
       return;
     }
-
     setIsLoading(true);
-    
     try {
       let response: GeneratedScriptResponse | null = null;
       switch (selectedInputMode) {
@@ -222,11 +218,9 @@ const App: React.FC = () => {
           if (englishUrlInput) response = await performTranslationAndScriptGeneration(englishUrlInput, selectedScriptLength, selectedScriptTone, selectedScriptType);
           break;
       }
-
       if (response) {
         if (response.script) setGeneratedScript(response.script);
         else setError(UI_STRINGS_MY.ERROR_GENERATING_SCRIPT + " (API returned an empty script)");
-        
         if (response.intermediateTranslation) setIntermediateTranslation(response.intermediateTranslation);
         if (response.sources) setGroundingSources(response.sources);
         if (response.script) setError(null);
@@ -273,11 +267,9 @@ const App: React.FC = () => {
 
   const handleProofreadScript = async () => {
     if (!generatedScript) return;
-
     setIsProofreading(true);
     setProofreadingError(null);
-    setProofreadScript(null); // Clear previous results
-
+    setProofreadScript(null);
     try {
       const result = await proofreadScriptWithAI(generatedScript);
       setProofreadScript(result);
@@ -333,152 +325,148 @@ const App: React.FC = () => {
     );
   }
 
-  if (!session) {
-    return <LoginScreen />; // LoginScreen will be updated for Supabase later
-  }
-
-  // If session exists, render the main app
-  return (
+  const ProtectedLayout = () => (
     <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <header className="text-center mb-10 sm:mb-16 relative">
         <h1 className="font-newspaper-title text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-800 border-b-4 border-neutral-700 pb-3 sm:pb-4">
           {UI_STRINGS_MY.APP_TITLE}
         </h1>
       </header>
-      
       {session && session.user && <UserProfile user={session.user} />}
       <DisclaimerMessage />
-
-      <main className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-none shadow-lg border border-neutral-300">
-        {error === UI_STRINGS_MY.ERROR_API_KEY_MISSING && !isLoading && (
-           <ErrorMessage message={UI_STRINGS_MY.ERROR_API_KEY_MISSING} />
-        )}
-
-        {apiKeyExists && (
-          <>
-            <InputSelector selectedMode={selectedInputMode} onSelectMode={handleInputModeChange} />
-            
-            <div className="my-6 p-5 bg-stone-50 rounded-none border border-neutral-200 space-y-6">
-              {renderInputs()}
-              
-              <ScriptLengthSelector 
-                selectedLength={selectedScriptLength}
-                onLengthChange={handleScriptLengthChange}
-              />
-              <ScriptToneSelector
-                selectedTone={selectedScriptTone}
-                onToneChange={handleScriptToneChange}
-              />
-              <ScriptTypeSelector
-                selectedType={selectedScriptType}
-                onTypeChange={handleScriptTypeChange}
-              />
-            </div>
-            
-            {error && error !== UI_STRINGS_MY.ERROR_API_KEY_MISSING && <ErrorMessage message={error} />}
-
-            <div className="mt-8 text-center">
-              <button
-                onClick={handleGenerateScript}
-                disabled={isGenerateDisabled()}
-                className="w-full sm:w-auto bg-neutral-700 hover:bg-neutral-800 disabled:bg-neutral-400 text-white font-semibold py-3 px-10 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 text-base"
-                aria-live="polite"
-                aria-label={getButtonText()}
-              >
-                {getButtonText()}
-              </button>
-            </div>
-          </>
-        )}
-        
-        {isLoading && <LoadingSpinner />}
-        
-        {!isLoading && apiKeyExists && (
-          <>
-            {intermediateTranslation && selectedInputMode === InputMode.TRANSLATE_DEVELOP && (
-              <div className="mt-8 p-6 bg-stone-50 rounded-none border border-neutral-200">
-                <h2 className="font-serif text-2xl font-bold text-neutral-800 mb-4 pb-2 border-b border-neutral-300">{UI_STRINGS_MY.INTERMEDIATE_TRANSLATION_HEADING}</h2>
-                <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap">
-                  {intermediateTranslation}
-                </div>
-              </div>
-            )}
-            {generatedScript ? (
-              <>
-                <ScriptDisplay script={generatedScript} sources={groundingSources || undefined} />
-                {!isLoading && (
-                  <div className="mt-6 text-center">
-                    <button
-                      onClick={handleProofreadScript}
-                      disabled={isProofreading || !generatedScript}
-                      className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold py-3 px-8 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-base"
-                      aria-label={UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
-                    >
-                      {UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-                !isLoading && !error && 
-                (selectedInputMode !== InputMode.FILE || fileContent) &&
-                !(selectedInputMode === InputMode.TRANSLATE_DEVELOP && intermediateTranslation) &&
-                <div className="mt-8 p-6 bg-stone-50 rounded-none border border-neutral-200 text-center text-neutral-500 font-serif" aria-label="Information message">
-                    {UI_STRINGS_MY.NO_SCRIPT_YET}
-                </div>
-            )}
-
-            {isProofreading && <LoadingSpinner message={UI_STRINGS_MY.MESSAGE_PROOFREADING_LOADING} />}
-            {proofreadingError && <ErrorMessage message={proofreadingError} />}
-
-            {proofreadScript && !isProofreading && (
-              <div className="mt-8 p-6 bg-purple-50 rounded-none border border-purple-200">
-                <h2 className="font-serif text-2xl font-bold text-purple-800 mb-4 pb-2 border-b border-purple-300">{UI_STRINGS_MY.SECTION_TITLE_EDITED_SCRIPT}</h2>
-                {/* Remember to define .edited-script-display in index.css: e.g., background-color: #f3e8ff; border-left: 4px solid #800080; padding: 10px; */}
-                <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap edited-script-display">
-                  {proofreadScript}
-                </div>
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={handleDownloadEditedScript}
-                    disabled={!proofreadScript}
-                    className="bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-6 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm"
-                    aria-label={UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
-                  >
-                    {UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {generatedScript && !proofreadScript && !isProofreading && ( // Show original download button only if not yet proofread or currently proofreading
-              <div className="mt-8 text-center">
-                <button
-                    onClick={downloadScript}
-                    className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 px-6 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm"
-                    aria-label={UI_STRINGS_MY.DOWNLOAD_SCRIPT_BUTTON}
-                >
-                    {UI_STRINGS_MY.DOWNLOAD_SCRIPT_BUTTON}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </main>
-
-      <footer className="text-center mt-12 py-6 border-t border-neutral-300">
+      <Outlet />
+       <footer className="text-center mt-12 py-6 border-t border-neutral-300">
         <p className="text-sm text-neutral-500 font-serif">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p>
       </footer>
-      {/* CSS class definition reminder:
-        .edited-script-display {
-          background-color: #f3e8ff; // A light purple background
-          border-left: 4px solid #800080; // Purple left border
-          padding: 10px;
-          white-space: pre-wrap; // Preserve formatting
-          font-family: 'Myanmar3', 'Padauk', sans-serif; // Ensure consistent font
-        }
-      */}
     </div>
+  );
+
+  const MainAppContent = () => (
+    <main className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-none shadow-lg border border-neutral-300">
+      {error === UI_STRINGS_MY.ERROR_API_KEY_MISSING && !isLoading && (
+         <ErrorMessage message={UI_STRINGS_MY.ERROR_API_KEY_MISSING} />
+      )}
+      {apiKeyExists && (
+        <>
+          <InputSelector selectedMode={selectedInputMode} onSelectMode={handleInputModeChange} />
+          <div className="my-6 p-5 bg-stone-50 rounded-none border border-neutral-200 space-y-6">
+            {renderInputs()}
+            <ScriptLengthSelector
+              selectedLength={selectedScriptLength}
+              onLengthChange={handleScriptLengthChange}
+            />
+            <ScriptToneSelector
+              selectedTone={selectedScriptTone}
+              onToneChange={handleScriptToneChange}
+            />
+            <ScriptTypeSelector
+              selectedType={selectedScriptType}
+              onTypeChange={handleScriptTypeChange}
+            />
+          </div>
+          {error && error !== UI_STRINGS_MY.ERROR_API_KEY_MISSING && <ErrorMessage message={error} />}
+          <div className="mt-8 text-center">
+            <button
+              onClick={handleGenerateScript}
+              disabled={isGenerateDisabled()}
+              className="w-full sm:w-auto bg-neutral-700 hover:bg-neutral-800 disabled:bg-neutral-400 text-white font-semibold py-3 px-10 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 text-base"
+              aria-live="polite"
+              aria-label={getButtonText()}
+            >
+              {getButtonText()}
+            </button>
+          </div>
+        </>
+      )}
+      {isLoading && <LoadingSpinner />}
+      {!isLoading && apiKeyExists && (
+        <>
+          {intermediateTranslation && selectedInputMode === InputMode.TRANSLATE_DEVELOP && (
+            <div className="mt-8 p-6 bg-stone-50 rounded-none border border-neutral-200">
+              <h2 className="font-serif text-2xl font-bold text-neutral-800 mb-4 pb-2 border-b border-neutral-300">{UI_STRINGS_MY.INTERMEDIATE_TRANSLATION_HEADING}</h2>
+              <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap">
+                {intermediateTranslation}
+              </div>
+            </div>
+          )}
+          {generatedScript ? (
+            <>
+              <ScriptDisplay script={generatedScript} sources={groundingSources || undefined} />
+              {!isLoading && (
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={handleProofreadScript}
+                    disabled={isProofreading || !generatedScript}
+                    className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold py-3 px-8 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-base"
+                    aria-label={UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
+                  >
+                    {UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+              !isLoading && !error &&
+              (selectedInputMode !== InputMode.FILE || fileContent) &&
+              !(selectedInputMode === InputMode.TRANSLATE_DEVELOP && intermediateTranslation) &&
+              <div className="mt-8 p-6 bg-stone-50 rounded-none border border-neutral-200 text-center text-neutral-500 font-serif" aria-label="Information message">
+                  {UI_STRINGS_MY.NO_SCRIPT_YET}
+              </div>
+          )}
+          {isProofreading && <LoadingSpinner message={UI_STRINGS_MY.MESSAGE_PROOFREADING_LOADING} />}
+          {proofreadingError && <ErrorMessage message={proofreadingError} />}
+          {proofreadScript && !isProofreading && (
+            <div className="mt-8 p-6 bg-purple-50 rounded-none border border-purple-200">
+              <h2 className="font-serif text-2xl font-bold text-purple-800 mb-4 pb-2 border-b border-purple-300">{UI_STRINGS_MY.SECTION_TITLE_EDITED_SCRIPT}</h2>
+              <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap edited-script-display">
+                {proofreadScript}
+              </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={handleDownloadEditedScript}
+                  disabled={!proofreadScript}
+                  className="bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-6 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm"
+                  aria-label={UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
+                >
+                  {UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
+                </button>
+              </div>
+            </div>
+          )}
+          {generatedScript && !proofreadScript && !isProofreading && (
+            <div className="mt-8 text-center">
+              <button
+                  onClick={downloadScript}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 px-6 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm"
+                  aria-label={UI_STRINGS_MY.DOWNLOAD_SCRIPT_BUTTON}
+              >
+                  {UI_STRINGS_MY.DOWNLOAD_SCRIPT_BUTTON}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </main>
+  );
+
+  return (
+    <Routes>
+      <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/" replace />} />
+      <Route path="/update-password" element={<UpdatePasswordScreen />} />
+      <Route
+        path="/"
+        element={
+          session ? (
+            <ProtectedLayout />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      >
+        <Route index element={<MainAppContent />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 
