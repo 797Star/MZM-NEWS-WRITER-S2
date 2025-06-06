@@ -319,7 +319,7 @@ const App: React.FC = () => {
   if (isLoadingAuth) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <LoadingSpinner message="Authenticating..." />
+        <LoadingSpinner message="Authenticating..." /> 
       </div>
     );
   }
@@ -337,7 +337,7 @@ const App: React.FC = () => {
         </h1>
       </header>
       
-      <UserProfile user={currentUser} />
+      <UserProfile user={currentUser} /> 
       <DisclaimerMessage />
 
       <main className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-none shadow-lg border border-neutral-300">
@@ -456,7 +456,7 @@ const App: React.FC = () => {
           </>
         )}
       </main>
-
+      
       <footer className="text-center mt-12 py-6 border-t border-neutral-300">
         <p className="text-sm text-neutral-500 font-serif">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p>
       </footer>
