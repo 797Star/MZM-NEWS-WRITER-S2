@@ -9,14 +9,14 @@ const UpdatePasswordScreen: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordUpdated, setIsPasswordUpdated] = useState(false);
-  // const navigate = useNavigate(); // Uncomment if using react-router-dom for navigation
+  const navigate = useNavigate(); // Uncomment if using react-router-dom for navigation
 
   // Supabase handles the session recovery from the URL fragment automatically
   // when the page loads after the user clicks the password reset link.
   // We can listen for the PASSWORD_RECOVERY event to provide specific UI updates if needed,
   // but often it's not strictly necessary for updateUser to work.
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, _session) => {
       if (event === 'PASSWORD_RECOVERY') {
         // This event confirms that Supabase has processed the recovery token.
         // You could set a state here if you want to show a specific message
@@ -53,7 +53,7 @@ const UpdatePasswordScreen: React.FC = () => {
       setMessage("Your password has been updated successfully! You can now sign in with your new password.");
       setIsPasswordUpdated(true);
       // Optionally, redirect to login page after a delay:
-      // setTimeout(() => navigate('/login'), 3000); // Example redirect
+      setTimeout(() => navigate('/login'), 3000); // Example redirect
     } catch (e: any) {
       setError(e.message || "An error occurred while updating your password.");
     } finally {
