@@ -1,4 +1,4 @@
-import { ScriptLength, ScriptTone, ScriptType, GeneratedScriptResponse, GroundingChunk } from '../types';
+import { ScriptLength, ScriptTone, ScriptType, GeneratedScriptResponse, GroundingChunk, ContentAnalysisResult, SentimentValue, SEOTitleSuggestion, TopicSuggestion } from '../types';
 import { getApiKey } from '../services/envConfig';
 import { GEMINI_PROOFREADER_SYSTEM_INSTRUCTION } from '../constants';
 
@@ -40,7 +40,7 @@ const makeGeminiRequest = async (prompt: string): Promise<any> => {
 
     const json = await response.json();
     // Log the full Gemini API response for debugging
-    console.log('Gemini API response:', JSON.stringify(json, null, 2));
+    // console.log('Gemini API response:', JSON.stringify(json, null, 2));
 
     if (!response.ok) {
       throw new Error(`API error: ${json.error?.message || response.statusText}`);
@@ -180,6 +180,110 @@ export const generateScriptFromFileContent = async (
     sources,
     intermediateTranslation: undefined
   };
+};
+
+export const analyzeAndSuggestContent = async (newsContent: string): Promise<ContentAnalysisResult> => {
+  // 1. Calculate Word Count
+  const wordCount = newsContent.split(/\s+/).filter(Boolean).length;
+
+  // 2. Design the prompt for Gemini
+  // Instruct Gemini to return a structured response, ideally JSON-like, or clearly delimited.
+  const prompt = `
+Analyze the following news content. Provide the output STRICTLY in the following JSON format:
+{
+  "sentiment": "Positive" | "Negative" | "Neutral",
+  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "seoTitleSuggestions": [
+    {"title": "SEO Title 1 (<= 100 chars)"},
+    {"title": "SEO Title 2 (<= 100 chars)"},
+    {"title": "SEO Title 3 (<= 100 chars)"}
+  ],
+  "followupTopicSuggestions": [
+    {"question": "Follow-up question 1?"},
+    {"question": "Follow-up question 2?"},
+    {"question": "Follow-up question 3?"}
+  ],
+  "relatedTopicSuggestions": [
+    {"question": "Related question 1?"},
+    {"question": "Related question 2?"},
+    {"question": "Related question 3?"}
+  ]
+}
+
+Ensure that:
+- Sentiment is one of "Positive", "Negative", or "Neutral".
+- Keywords are an array of 3 to 5 main keywords identified from the text.
+- Each SEO title suggestion is 100 characters or less.
+- Follow-up and related topic suggestions are phrased as questions.
+
+News Content to Analyze:
+---
+${newsContent}
+---
+  `;
+
+  try {
+    const geminiResponse = await makeGeminiRequest(prompt);
+    const rawTextResponse = geminiResponse.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+    if (!rawTextResponse) {
+      console.error('Gemini returned empty or malformed response for content analysis.', geminiResponse);
+      throw new Error('Failed to get analysis from AI: Empty response.');
+    }
+
+    // Attempt to parse the response as JSON
+    // Gemini might return the JSON string within a markdown code block (```json ... ```)
+    let parsedResult;
+    try {
+      // Clean potential markdown fences if present
+      const jsonString = rawTextResponse.replace(/^```json\s*|\s*```$/g, '');
+      parsedResult = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('Failed to parse Gemini response as JSON for content analysis:', parseError);
+      console.error('Raw Gemini text response for content analysis:', rawTextResponse);
+      throw new Error('Failed to parse analysis from AI: Invalid format.');
+    }
+
+    // Validate and structure the result
+    const sentiment = parsedResult.sentiment || 'Unknown';
+    const keywords = parsedResult.keywords || [];
+    const seoTitleSuggestions = (parsedResult.seoTitleSuggestions || []).map((t: any, index: number) => ({
+      id: `seo-${index}-${Date.now()}`, // Basic unique ID
+      title: t.title || ''
+    }));
+    const followupTopicSuggestions = (parsedResult.followupTopicSuggestions || []).map((t: any, index: number) => ({
+      id: `followup-${index}-${Date.now()}`,
+      question: t.question || ''
+    }));
+    const relatedTopicSuggestions = (parsedResult.relatedTopicSuggestions || []).map((t: any, index: number) => ({
+      id: `related-${index}-${Date.now()}`,
+      question: t.question || ''
+    }));
+
+    return {
+      wordCount,
+      sentiment: sentiment as SentimentValue, // Cast to SentimentValue, add validation if needed
+      keywords,
+      seoTitleSuggestions,
+      followupTopicSuggestions,
+      relatedTopicSuggestions,
+    };
+
+  } catch (error) {
+    console.error('Error in analyzeAndSuggestContent:', error);
+    // Fallback or rethrow
+    // For now, return a default/error structure or rethrow
+    // This structure helps the UI know something went wrong but provides the type shape.
+    return {
+      wordCount, // Word count can still be returned
+      sentiment: 'Unknown',
+      keywords: [],
+      seoTitleSuggestions: [],
+      followupTopicSuggestions: [],
+      relatedTopicSuggestions: [],
+      // You might add an error field here if the type ContentAnalysisResult supports it
+    };
+  }
 };
 
 // Function to proofread a script using AI
