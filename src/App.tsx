@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from "react";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "./services/firebaseConfig";
+import LoginScreen from "./components/LoginScreen";
 import React, { useState, useEffect, useCallback } from 'react';
 import { InputMode, GeneratedScriptResponse, GroundingChunk, ScriptLength, ScriptTone, ScriptType } from './types';
 import { UI_STRINGS_MY } from './constants';
