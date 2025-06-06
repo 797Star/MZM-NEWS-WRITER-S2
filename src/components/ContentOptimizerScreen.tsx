@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import type { SentimentValue } from '../types';
 import { ContentAnalysisResult, SEOTitleSuggestion, TopicSuggestion } from '../types'; // Assuming types.ts is in ../types
 import { analyzeAndSuggestContent } from '../services/geminiService'; // Assuming geminiService.ts is in ../services
 import LoadingSpinner from './LoadingSpinner'; // Assuming a LoadingSpinner component exists
