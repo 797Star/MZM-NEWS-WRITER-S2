@@ -1,5 +1,4 @@
 import { ScriptLength, ScriptTone, ScriptType, GeneratedScriptResponse, GroundingChunk, ContentAnalysisResult, SentimentValue } from '../types';
-import type { SEOTitleSuggestion, TopicSuggestion } from '../types';
 import { getApiKey } from '../services/envConfig';
 import { GEMINI_PROOFREADER_SYSTEM_INSTRUCTION } from '../constants';
 
