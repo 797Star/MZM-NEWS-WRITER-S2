@@ -66,7 +66,7 @@ const App: React.FC = () => {
     );
 
     return () => {
-      authListener?.unsubscribe();
+      authListener?.subscription?.unsubscribe();
     };
   }, []);
 
