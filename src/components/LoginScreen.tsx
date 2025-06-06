@@ -1,44 +1,46 @@
 import React, { useState } from 'react';
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  AuthError
-} from 'firebase/auth';
+import { supabase } from '../services/supabaseClient'; // Adjusted path
+import { AuthError } from '@supabase/supabase-js';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null); // For messages like 'Check your email'
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false); // To toggle between Sign In and Sign Up mode
+  const [isSignUp, setIsSignUp] = useState(false);
 
-  const auth = getAuth();
-
-  const handleEmailPasswordSignIn = async (event: React.FormEvent) => {
+  const handleEmailPasswordAuth = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Login success will be handled by onAuthStateChanged in App.tsx
-    } catch (e) {
-      const authError = e as AuthError;
-      setError(authError.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    setMessage(null);
 
-  const handleEmailPasswordSignUp = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setIsLoading(true);
-    setError(null);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      // Sign up success will be handled by onAuthStateChanged in App.tsx
+      if (isSignUp) {
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (signUpError) throw signUpError;
+        if (data.user && data.user.identities && data.user.identities.length === 0) {
+          // This often indicates email confirmation is pending for some providers or settings
+          setMessage('Signup successful, but confirmation might be required. Please check your email if you used a new email provider.');
+        } else if (data.session) {
+           setMessage('Signup successful! You are now logged in.');
+          // Session is active, onAuthStateChange in App.tsx will handle redirect
+        } else {
+          // Default message if user needs to confirm email
+           setMessage('Signup successful! Please check your email to confirm your account.');
+        }
+      } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (signInError) throw signInError;
+        // Login success will be handled by onAuthStateChanged in App.tsx
+      }
     } catch (e) {
       const authError = e as AuthError;
       setError(authError.message);
@@ -50,15 +52,17 @@ const LoginScreen: React.FC = () => {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
-    const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      // Login success will be handled by onAuthStateChanged in App.tsx
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+      if (oauthError) throw oauthError;
+      // OAuth flow will redirect; onAuthStateChange in App.tsx will handle it
     } catch (e) {
       const authError = e as AuthError;
       setError(authError.message);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // May not be reached if redirect happens quickly
     }
   };
 
@@ -72,7 +76,7 @@ const LoginScreen: React.FC = () => {
           {isSignUp ? 'Create an account' : 'Sign in to your account'}
         </p>
 
-        <form onSubmit={isSignUp ? handleEmailPasswordSignUp : handleEmailPasswordSignIn}>
+        <form onSubmit={handleEmailPasswordAuth}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
             <input
@@ -93,12 +97,14 @@ const LoginScreen: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6} // Supabase default minimum password length
               className="w-full px-3 py-2 border border-neutral-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
               placeholder="••••••••"
             />
           </div>
 
           {error && <p className="mb-4 text-red-600 text-sm text-center">{error}</p>}
+          {message && <p className="mb-4 text-green-600 text-sm text-center">{message}</p>}
           {isLoading && <p className="mb-4 text-neutral-600 text-sm text-center">Loading...</p>}
 
           <button
@@ -112,7 +118,11 @@ const LoginScreen: React.FC = () => {
 
         <div className="mt-4 text-center">
           <button
-            onClick={() => setIsSignUp(!isSignUp)}
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+              setError(null);
+              setMessage(null);
+            }}
             className="text-sm text-neutral-600 hover:text-neutral-800 underline"
           >
             {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}

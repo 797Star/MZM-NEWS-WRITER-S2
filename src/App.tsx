@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getAuth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { supabase } from './services/supabaseClient';
+import { Session } from '@supabase/supabase-js';
 import { InputMode, GeneratedScriptResponse, GroundingChunk, ScriptLength, ScriptTone, ScriptType } from './types';
 import { UI_STRINGS_MY } from './constants';
 import InputSelector from './components/InputSelector';
@@ -14,7 +15,7 @@ import ScriptToneSelector from './components/ScriptToneSelector';
 import ScriptTypeSelector from './components/ScriptTypeSelector';
 import DisclaimerMessage from './components/DisclaimerMessage';
 import LoginScreen from './components/LoginScreen';
-import UserProfile from './components/UserProfile';
+import UserProfile from './components/UserProfile'; // Re-integrate UserProfile
 import {
   generateScriptFromFileContent,
   generateScriptFromUrl,
@@ -25,7 +26,7 @@ import {
 import { getApiKey, isApiKeyValid } from './services/envConfig';
 
 const App: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
   const [apiKeyExists, setApiKeyExists] = useState<boolean>(false);
   const [selectedInputMode, setSelectedInputMode] = useState<InputMode>(InputMode.FILE);
@@ -51,14 +52,22 @@ const App: React.FC = () => {
   const [proofreadingError, setProofreadingError] = useState<string | null>(null);
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user: FirebaseUser | null) => {
-      setCurrentUser(user);
+    setIsLoadingAuth(true);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
       setIsLoadingAuth(false);
     });
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        // You might set isLoadingAuth to false here too if events imply loading is done
+      }
+    );
+
+    return () => {
+      authListener?.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -319,16 +328,16 @@ const App: React.FC = () => {
   if (isLoadingAuth) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <LoadingSpinner message="Authenticating..." /> 
+        <LoadingSpinner message="Authenticating..." />
       </div>
     );
   }
 
-  if (!currentUser) {
-    return <LoginScreen />;
+  if (!session) {
+    return <LoginScreen />; // LoginScreen will be updated for Supabase later
   }
 
-  // If currentUser exists, render the main app
+  // If session exists, render the main app
   return (
     <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <header className="text-center mb-10 sm:mb-16 relative">
@@ -337,7 +346,7 @@ const App: React.FC = () => {
         </h1>
       </header>
       
-      <UserProfile user={currentUser} /> 
+      {session && session.user && <UserProfile user={session.user} />}
       <DisclaimerMessage />
 
       <main className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-none shadow-lg border border-neutral-300">
@@ -456,7 +465,7 @@ const App: React.FC = () => {
           </>
         )}
       </main>
-      
+
       <footer className="text-center mt-12 py-6 border-t border-neutral-300">
         <p className="text-sm text-neutral-500 font-serif">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p>
       </footer>
