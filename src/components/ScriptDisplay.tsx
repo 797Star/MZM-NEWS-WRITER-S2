@@ -24,7 +24,7 @@ const ScriptDisplay: React.FC<ScriptDisplayProps> = ({ script, sources }) => {
   return (
     <div className="mt-10 pt-6 border-t-2 border-neutral-400">
       <h2 className="font-serif text-3xl font-bold text-neutral-800 mb-3 pb-2 border-b border-neutral-300">
-        {UI_STRINGS_MY.GENERATED_SCRIPT_HEADING}
+        {UI_STRINGS_MY.SCRIPT_HEADING}
       </h2>
       <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap p-4 bg-stone-50 border border-neutral-200 rounded-sm">
         {mainScriptContent}

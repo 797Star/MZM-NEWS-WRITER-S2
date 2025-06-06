@@ -1,3 +1,4 @@
+import '../services/firebaseConfig'; // Adjust the path if needed
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
