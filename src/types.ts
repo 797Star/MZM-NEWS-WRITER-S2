@@ -41,3 +41,24 @@ export interface GeneratedScriptResponse {
   intermediateTranslation?: string;
   sources?: GroundingChunk[];
 }
+
+export interface SEOTitleSuggestion {
+  id: string; // For React keys, can be generated (e.g., uuid or index-based)
+  title: string;
+}
+
+export interface TopicSuggestion {
+  id: string; // For React keys
+  question: string;
+}
+
+export type SentimentValue = 'Positive' | 'Negative' | 'Neutral' | 'Unknown';
+
+export interface ContentAnalysisResult {
+  wordCount: number;
+  sentiment: SentimentValue;
+  keywords: string[]; // Array of identified keywords
+  seoTitleSuggestions: SEOTitleSuggestion[];
+  followupTopicSuggestions: TopicSuggestion[];
+  relatedTopicSuggestions: TopicSuggestion[];
+}

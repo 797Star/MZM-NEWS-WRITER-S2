@@ -24,8 +24,9 @@ import {
   proofreadScriptWithAI,
 } from './services/geminiService';
 import { getApiKey, isApiKeyValid } from './services/envConfig';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom';
 import UpdatePasswordScreen from './components/UpdatePasswordScreen';
+import ContentOptimizerScreen from './components/ContentOptimizerScreen';
 
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -334,6 +335,17 @@ const App: React.FC = () => {
       </header>
       {session && session.user && <UserProfile user={session.user} />}
       <DisclaimerMessage />
+
+      {/* Add navigation link here */}
+      <nav className="text-center my-6"> {/* Increased margin for better spacing */}
+        <Link
+          to="/content-optimizer"
+          className="text-lg text-neutral-700 hover:text-neutral-900 underline hover:bg-neutral-100 p-2 rounded-md transition-all duration-150 ease-in-out"
+        >
+          News Content Optimizer & Suggester
+        </Link>
+      </nav>
+
       <Outlet />
        <footer className="text-center mt-12 py-6 border-t border-neutral-300">
         <p className="text-sm text-neutral-500 font-serif">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p>
@@ -464,6 +476,7 @@ const App: React.FC = () => {
         }
       >
         <Route index element={<MainAppContent />} />
+        <Route path="content-optimizer" element={<ContentOptimizerScreen />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
