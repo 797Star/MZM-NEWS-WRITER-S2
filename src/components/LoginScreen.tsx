@@ -1,6 +1,18 @@
 import React from 'react';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from '../services/firebaseConfig';
 
-const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+const LoginScreen: React.FC = () => {
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      // Optionally, handle post-login logic here (redirect, etc.)
+    } catch (error) {
+      alert("Login failed: " + (error as Error).message);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-[#f5f5f2]" style={{ fontFamily: "Lora, Georgia, 'Times New Roman', Times, serif" }}>
       <div className="bg-white p-8 rounded shadow-lg max-w-md w-full border border-neutral-200">
@@ -13,7 +25,7 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
         <button
           className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-neutral-300 rounded bg-white hover:bg-neutral-100 transition text-lg font-semibold text-neutral-800 shadow-sm"
           style={{ fontFamily: "Lora, Georgia, 'Times New Roman', Times, serif" }}
-          onClick={onLogin}
+          onClick={handleGoogleLogin}
         >
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-6 w-6" />
           Sign in with Google
