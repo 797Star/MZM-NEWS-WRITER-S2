@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { getAuth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { InputMode, GeneratedScriptResponse, GroundingChunk, ScriptLength, ScriptTone, ScriptType } from './types';
 import { UI_STRINGS_MY } from './constants';
 import InputSelector from './components/InputSelector';
@@ -12,6 +13,8 @@ import ScriptLengthSelector from './components/ScriptLengthSelector';
 import ScriptToneSelector from './components/ScriptToneSelector';
 import ScriptTypeSelector from './components/ScriptTypeSelector';
 import DisclaimerMessage from './components/DisclaimerMessage';
+import LoginScreen from './components/LoginScreen';
+import UserProfile from './components/UserProfile';
 import {
   generateScriptFromFileContent,
   generateScriptFromUrl,
@@ -22,6 +25,8 @@ import {
 import { getApiKey, isApiKeyValid } from './services/envConfig';
 
 const App: React.FC = () => {
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
   const [apiKeyExists, setApiKeyExists] = useState<boolean>(false);
   const [selectedInputMode, setSelectedInputMode] = useState<InputMode>(InputMode.FILE);
   const [selectedScriptLength, setSelectedScriptLength] = useState<ScriptLength>(ScriptLength.STANDARD);
@@ -44,6 +49,17 @@ const App: React.FC = () => {
   const [proofreadScript, setProofreadScript] = useState<string | null>(null);
   const [isProofreading, setIsProofreading] = useState<boolean>(false);
   const [proofreadingError, setProofreadingError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setIsLoadingAuth(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const checkApiKey = () => {
@@ -300,14 +316,28 @@ const App: React.FC = () => {
     return UI_STRINGS_MY.GENERATE_SCRIPT_BUTTON;
   };
 
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <LoadingSpinner message="Authenticating..." />
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return <LoginScreen />;
+  }
+
+  // If currentUser exists, render the main app
   return (
     <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-      <header className="text-center mb-10 sm:mb-16">
+      <header className="text-center mb-10 sm:mb-16 relative">
         <h1 className="font-newspaper-title text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-800 border-b-4 border-neutral-700 pb-3 sm:pb-4">
           {UI_STRINGS_MY.APP_TITLE}
         </h1>
       </header>
       
+      <UserProfile user={currentUser} />
       <DisclaimerMessage />
 
       <main className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-none shadow-lg border border-neutral-300">
@@ -426,6 +456,7 @@ const App: React.FC = () => {
           </>
         )}
       </main>
+
       <footer className="text-center mt-12 py-6 border-t border-neutral-300">
         <p className="text-sm text-neutral-500 font-serif">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p>
       </footer>
