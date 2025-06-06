@@ -8,7 +8,7 @@ import { firebaseConfig } from './services/firebaseConfig';
 // import { getAnalytics } from "firebase/analytics";
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const _app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app); // Optional: Enable if needed
 
 createRoot(document.getElementById('root')!).render(
