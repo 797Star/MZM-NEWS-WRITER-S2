@@ -16,7 +16,7 @@ const UpdatePasswordScreen: React.FC = () => {
   // We can listen for the PASSWORD_RECOVERY event to provide specific UI updates if needed,
   // but often it's not strictly necessary for updateUser to work.
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, _session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => { // _session removed
       if (event === 'PASSWORD_RECOVERY') {
         // This event confirms that Supabase has processed the recovery token.
         // You could set a state here if you want to show a specific message
