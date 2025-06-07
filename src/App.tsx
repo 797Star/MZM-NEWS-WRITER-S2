@@ -62,7 +62,7 @@ const App: React.FC = () => {
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (event, session) => {
+      (_event, session) => {
         setSession(session);
       }
     );
