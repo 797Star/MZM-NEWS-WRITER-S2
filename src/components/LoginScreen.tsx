@@ -109,64 +109,64 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-neutral-100 px-4"> {/* Added px-4 for small screen padding */}
-      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-xl max-w-md w-full border border-neutral-200"> {/* Adjusted padding */}
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center text-neutral-800"> {/* Adjusted text size */}
-          MZM News Writer
+    <div className="min-h-screen flex flex-col justify-center items-center bg-neutral-200 px-4 py-8">
+      <div className="bg-white p-8 sm:p-10 rounded-xl shadow-2xl max-w-md w-full border border-neutral-300">
+        <h1 className="text-3xl sm:text-4xl font-bold text-primary-dark text-center mb-8">
+          BM_LABEL_LoginWelcome
         </h1>
-        <p className="mb-6 text-center text-neutral-600 text-sm sm:text-base"> {/* Adjusted text size */}
-          {isForgotPassword ? 'Reset your password' : (isSignUp ? 'Create an account' : 'Sign in to your account')}
+        <p className="mb-6 text-center text-neutral-600 text-sm sm:text-base">
+          {isForgotPassword ? 'BM_LABEL_ResetPasswordPrompt' : (isSignUp ? 'BM_LABEL_CreateAccountPrompt' : 'BM_LABEL_SignInPrompt')}
         </p>
 
-        <form onSubmit={isForgotPassword ? handlePasswordResetRequest : handleEmailPasswordAuth}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">Email Address</label>
+        <form onSubmit={isForgotPassword ? handlePasswordResetRequest : handleEmailPasswordAuth} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">BM_LABEL_Email</label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="you@example.com"
+              className="w-full px-4 py-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150"
+              placeholder="BM_PLACEHOLDER_EnterEmail"
             />
           </div>
           {!isForgotPassword && (
-            <div className="mb-6">
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">Password</label>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">BM_LABEL_Password</label>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6} // Supabase default minimum password length
-                className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                minLength={6}
+                className="w-full px-4 py-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150"
                 placeholder="••••••••"
               />
             </div>
           )}
 
-          {error && <p className="mb-4 text-red-600 text-sm text-center">{error}</p>}
-          {message && <p className="mb-4 text-green-600 text-sm text-center">{message}</p>}
-          {isLoading && <p className="mb-4 text-neutral-500 text-sm text-center">Loading...</p>}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {message && <p className="text-green-500 text-sm text-center">{message}</p>}
+          {isLoading && <p className="text-neutral-500 text-sm text-center">Loading...</p>}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 px-4 sm:py-3 sm:px-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow-md disabled:bg-neutral-400 transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm sm:text-base"
+            className="w-full py-3 px-5 bg-gradient-deep-blue hover:opacity-90 text-white font-semibold rounded-md shadow-md hover:shadow-lg disabled:bg-neutral-400 disabled:opacity-70 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Changed to gradient, adjusted hover */
           >
-            {isLoading ? 'Processing...' : (isForgotPassword ? 'Send Reset Link' : (isSignUp ? 'Sign Up' : 'Sign In'))}
+            {isLoading ? 'Processing...' : (isForgotPassword ? 'BM_LABEL_SendResetLink' : (isSignUp ? 'BM_LABEL_SignUp' : 'BM_LABEL_SignIn'))}
           </button>
         </form>
 
         {!isForgotPassword && (
           <>
-            <div className="relative my-4 sm:my-6"> {/* Adjusted margin */}
+            <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-neutral-300"></div>
               </div>
-              <div className="relative flex justify-center text-xs sm:text-sm"> {/* Adjusted text size */}
+              <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-neutral-500">Or continue with</span>
               </div>
             </div>
@@ -175,22 +175,21 @@ const LoginScreen: React.FC = () => {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={isLoading}
-              className="w-full py-2 px-4 sm:py-3 sm:px-5 bg-white hover:bg-neutral-50 text-neutral-700 font-semibold rounded-md shadow-md border border-neutral-300 disabled:bg-neutral-100 transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center text-sm sm:text-base"
+              className="w-full py-3 px-5 bg-white hover:bg-neutral-100 text-neutral-700 font-semibold rounded-md shadow-md border border-neutral-300 disabled:bg-neutral-100 transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 flex items-center justify-center text-sm sm:text-base"
             >
-              {/* Basic Google Icon (Placeholder) - A proper SVG would be better */}
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24" fill="currentColor"> {/* Adjusted icon size */}
+              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 <path d="M1 1h22v22H1z" fill="none"/>
               </svg>
-              Sign in with Google
+              BM_LABEL_SignInWithGoogle
             </button>
           </>
         )}
 
-        <div className="mt-4 sm:mt-6 text-center"> {/* Adjusted margin */}
+        <div className="mt-6 text-center">
           {isForgotPassword ? (
             <button
               onClick={() => {
@@ -198,42 +197,40 @@ const LoginScreen: React.FC = () => {
                 setError(null);
                 setMessage(null);
               }}
-              className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline" /* Adjusted text size */
+              className="text-sm text-accent hover:text-accent-dark underline"
             >
-              Back to Sign In
+              BM_LABEL_BackToSignIn
             </button>
           ) : (
-            <>
+            <div className="flex flex-col sm:flex-row justify-between items-center">
               <button
                 onClick={() => {
                   setIsSignUp(!isSignUp);
                   setError(null);
                   setMessage(null);
                 }}
-                className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline" /* Adjusted text size */
+                className="text-sm text-accent hover:text-accent-dark underline mb-2 sm:mb-0"
               >
-                {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+                {isSignUp ? 'BM_LABEL_AlreadyAccount' : 'BM_LABEL_SignUpPrompt'}
               </button>
-              {!isSignUp && ( // Only show 'Forgot Password?' if on the Sign In form
-                <div className="mt-1.5 sm:mt-2"> {/* Adjusted margin */}
+              {!isSignUp && (
                   <button
                     onClick={() => {
                       setIsForgotPassword(true);
                       setError(null);
                       setMessage(null);
                     }}
-                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline" /* Adjusted text size */
+                    className="text-sm text-accent hover:text-accent-dark underline"
                   >
-                    Forgot Password?
+                    BM_LABEL_ForgotPassword
                   </button>
-                </div>
               )}
-            </>
+            </div>
           )}
         </div>
 
       </div>
-      <div className="mt-6 sm:mt-8 text-xs text-neutral-500 text-center"> {/* Adjusted margin & text size */}
+      <div className="mt-8 text-xs text-neutral-600 text-center"> {/* Slightly darker text for footer */}
         &copy; {new Date().getFullYear()} MZM News Writer
       </div>
     </div>
