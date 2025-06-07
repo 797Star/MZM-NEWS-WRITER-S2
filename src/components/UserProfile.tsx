@@ -153,6 +153,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   placeholder="BM_PLACEHOLDER_ConfirmNewPassword"
                 />
               </div>
+              </div> {/* Closing div for space-y-4 that wraps the input fields */}
               {passwordChangeError && <p className="mb-2 text-red-500 text-sm">{passwordChangeError}</p>}
               {passwordChangeMessage && <p className="mb-2 text-success text-sm">{passwordChangeMessage}</p>}
               <div className="flex flex-col sm:flex-row gap-3 pt-2"> {/* Added pt-2 for slight separation */}
