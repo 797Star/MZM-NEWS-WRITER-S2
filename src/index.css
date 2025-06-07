@@ -1,3 +1,12 @@
+@font-face {
+  font-family: 'Pyitaungsu';
+  font-style: normal;
+  font-weight: 400; /* Assuming regular weight */
+  font-display: swap;
+  src: url('/fonts/Pyitaungsu.woff2') format('woff2'); /* Assuming WOFF2 format */
+  /* Add other formats here if available, e.g., .ttf, .otf */
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

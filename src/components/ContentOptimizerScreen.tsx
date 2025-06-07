@@ -49,23 +49,23 @@ const ContentOptimizerScreen: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-      <h2 className="text-2xl sm:text-3xl font-bold text-neutral-800 text-center mb-6">
+      <h2 className="text-2xl sm:text-3xl font-bold text-neutral-800 text-center mb-8">
         News Content Optimizer & Suggester
       </h2>
 
-      <div className="bg-white p-6 shadow rounded-lg border border-neutral-200">
+      <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
         <textarea
           value={newsContent}
           onChange={(e) => setNewsContent(e.target.value)}
           placeholder="Paste your news article content here..."
           rows={10}
-          className="w-full p-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 resize-y"
+          className="w-full p-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
           disabled={isLoading}
         />
         <button
           onClick={handleAnalyzeContent}
           disabled={isLoading || !newsContent.trim()}
-          className="mt-4 w-full bg-neutral-700 hover:bg-neutral-800 disabled:bg-neutral-400 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2"
+          className="mt-4 w-full py-2 px-4 sm:py-3 sm:px-5 bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-400 text-white font-semibold rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm sm:text-base" /* Adjusted padding & text size */
         >
           {isLoading ? 'Analyzing...' : 'Analyze Content'}
         </button>
@@ -75,30 +75,31 @@ const ContentOptimizerScreen: React.FC = () => {
       {error && <ErrorMessage message={error} />}
 
       {analysisResult && !isLoading && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6"> {/* Adjusted spacing */}
           {/* Word Count & Sentiment */}
-          <div className="bg-white p-6 shadow rounded-lg border border-neutral-200">
-            <h3 className="text-xl font-semibold text-neutral-700 mb-3">Content Metrics</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <p className="text-neutral-700">
+          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
+            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">Content Metrics</h3> {/* Adjusted text size & margin */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4"> {/* Adjusted gap */}
+              <p className="text-sm sm:text-base text-neutral-600"> {/* Adjusted text size */}
                 <strong>Word Count:</strong> {analysisResult.wordCount}
               </p>
-              <p className="text-neutral-700">
+              <p className="text-sm sm:text-base text-neutral-600"> {/* Adjusted text size */}
                 <strong>Sentiment:</strong> <span className={`font-medium ${
-                  analysisResult.sentiment === 'Positive' ? 'text-green-600' :
-                  analysisResult.sentiment === 'Negative' ? 'text-red-600' :
-                  analysisResult.sentiment === 'Neutral' ? 'text-blue-600' : 'text-neutral-600'
+                  analysisResult.sentiment === 'Positive' ? 'text-green-500' : // Adjusted shade
+                  analysisResult.sentiment === 'Negative' ? 'text-red-500' :   // Adjusted shade
+                  analysisResult.sentiment === 'Neutral' ? 'text-sky-500' :
+                  'text-neutral-500'
                 }`}>
                   {analysisResult.sentiment}
                 </span>
               </p>
             </div>
              {analysisResult.keywords && analysisResult.keywords.length > 0 && (
-                <div className="mt-4">
-                    <h4 className="text-md font-semibold text-neutral-600 mb-1">Identified Keywords:</h4>
-                    <div className="flex flex-wrap gap-2">
+                <div className="mt-3 sm:mt-4"> {/* Adjusted margin */}
+                    <h4 className="text-sm sm:text-md font-semibold text-neutral-600 mb-1.5 sm:mb-2">Identified Keywords:</h4> {/* Adjusted text size & margin */}
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2"> {/* Adjusted gap */}
                         {analysisResult.keywords.map((keyword, index) => (
-                            <span key={index} className="bg-sky-100 text-sky-700 px-2 py-1 rounded-full text-sm">
+                            <span key={index} className="bg-sky-100 text-sky-800 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm shadow-sm"> {/* Corrected padding & text size */}
                                 {keyword}
                             </span>
                         ))}
@@ -108,20 +109,20 @@ const ContentOptimizerScreen: React.FC = () => {
           </div>
 
           {/* SEO Title Suggestions */}
-          <div className="bg-white p-6 shadow rounded-lg border border-neutral-200">
-            <h3 className="text-xl font-semibold text-neutral-700 mb-3">SEO Title Suggestions</h3>
-            {renderSuggestionsList(analysisResult.seoTitleSuggestions, 'title')}
+          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
+            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">SEO Title Suggestions</h3> {/* Adjusted text size & margin */}
+            {renderSuggestionsList(analysisResult.seoTitleSuggestions, 'title')} {/* Assuming renderSuggestionsList uses responsive text internally or defaults are fine */}
           </div>
 
           {/* Follow-up Topic Suggestions */}
-          <div className="bg-white p-6 shadow rounded-lg border border-neutral-200">
-            <h3 className="text-xl font-semibold text-neutral-700 mb-3">Follow-up Topic Questions</h3>
+          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
+            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">Follow-up Topic Questions</h3> {/* Adjusted text size & margin */}
             {renderSuggestionsList(analysisResult.followupTopicSuggestions, 'question')}
           </div>
 
           {/* Related Topic Suggestions */}
-          <div className="bg-white p-6 shadow rounded-lg border border-neutral-200">
-            <h3 className="text-xl font-semibold text-neutral-700 mb-3">Related Topic Questions</h3>
+          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
+            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">Related Topic Questions</h3> {/* Adjusted text size & margin */}
             {renderSuggestionsList(analysisResult.relatedTopicSuggestions, 'question')}
           </div>
         </div>

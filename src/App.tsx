@@ -24,7 +24,7 @@ import {
   proofreadScriptWithAI,
 } from './services/geminiService';
 import { getApiKey, isApiKeyValid } from './services/envConfig';
-import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom'; // Removed useNavigate
 import UpdatePasswordScreen from './components/UpdatePasswordScreen';
 import ContentOptimizerScreen from './components/ContentOptimizerScreen';
 
@@ -61,7 +61,8 @@ const App: React.FC = () => {
     });
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (event, session) => {
         setSession(session);
       }
     );
@@ -327,41 +328,42 @@ const App: React.FC = () => {
   }
 
   const ProtectedLayout = () => (
-    <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-      <header className="text-center mb-10 sm:mb-16 relative">
-        <h1 className="font-newspaper-title text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-800 border-b-4 border-neutral-700 pb-3 sm:pb-4">
+    <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-neutral-50"> {/* Added bg-neutral-50 for overall page */}
+      <header className="text-center mb-8 md:mb-12 relative"> {/* Adjusted bottom margin */}
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-800 border-b-4 border-neutral-700 pb-2 sm:pb-3"> {/* Adjusted font size & padding */}
           {UI_STRINGS_MY.APP_TITLE}
         </h1>
       </header>
-      {session && session.user && <UserProfile user={session.user} />}
-      <DisclaimerMessage />
+      {session && session.user && <UserProfile user={session.user} />} {/* UserProfile itself will be made responsive */}
+      <DisclaimerMessage /> {/* DisclaimerMessage might need responsive text if long */}
 
       {/* Add navigation link here */}
-      <nav className="text-center my-6"> {/* Increased margin for better spacing */}
+      <nav className="text-center my-4 md:my-6"> {/* Adjusted margin */}
+        {/* The Link component is suitable here and can be styled as a button */}
         <Link
           to="/content-optimizer"
-          className="text-lg text-neutral-700 hover:text-neutral-900 underline hover:bg-neutral-100 p-2 rounded-md transition-all duration-150 ease-in-out"
+          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-base md:text-lg" /* Adjusted text size */
         >
-          News Content Optimizer & Suggester
+          Optimize Content
         </Link>
       </nav>
 
       <Outlet />
-       <footer className="text-center mt-12 py-6 border-t border-neutral-300">
-        <p className="text-sm text-neutral-500 font-serif">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p>
+       <footer className="text-center mt-10 md:mt-12 py-5 md:py-6 border-t border-neutral-200"> {/* Adjusted padding & margin */}
+        <p className="text-xs sm:text-sm text-neutral-500">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p> {/* Adjusted text size */}
       </footer>
     </div>
   );
 
   const MainAppContent = () => (
-    <main className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-none shadow-lg border border-neutral-300">
+    <main className="max-w-4xl mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-xl border border-neutral-200"> {/* Adjusted padding */}
       {error === UI_STRINGS_MY.ERROR_API_KEY_MISSING && !isLoading && (
          <ErrorMessage message={UI_STRINGS_MY.ERROR_API_KEY_MISSING} />
       )}
       {apiKeyExists && (
         <>
           <InputSelector selectedMode={selectedInputMode} onSelectMode={handleInputModeChange} />
-          <div className="my-6 p-5 bg-stone-50 rounded-none border border-neutral-200 space-y-6">
+          <div className="my-6 p-5 bg-stone-100 rounded-lg border border-neutral-200 space-y-6"> {/* Updated inner container, bg-stone-100 */}
             {renderInputs()}
             <ScriptLengthSelector
               selectedLength={selectedScriptLength}
@@ -381,7 +383,7 @@ const App: React.FC = () => {
             <button
               onClick={handleGenerateScript}
               disabled={isGenerateDisabled()}
-              className="w-full sm:w-auto bg-neutral-700 hover:bg-neutral-800 disabled:bg-neutral-400 text-white font-semibold py-3 px-10 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 text-base"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-400 text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-base"
               aria-live="polite"
               aria-label={getButtonText()}
             >
@@ -394,9 +396,9 @@ const App: React.FC = () => {
       {!isLoading && apiKeyExists && (
         <>
           {intermediateTranslation && selectedInputMode === InputMode.TRANSLATE_DEVELOP && (
-            <div className="mt-8 p-6 bg-stone-50 rounded-none border border-neutral-200">
-              <h2 className="font-serif text-2xl font-bold text-neutral-800 mb-4 pb-2 border-b border-neutral-300">{UI_STRINGS_MY.INTERMEDIATE_TRANSLATION_HEADING}</h2>
-              <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap">
+            <div className="mt-8 p-6 bg-stone-100 rounded-lg border border-neutral-200"> {/* Updated container style */}
+              <h2 className="text-2xl font-bold text-neutral-800 mb-4 pb-2 border-b border-neutral-300">{UI_STRINGS_MY.INTERMEDIATE_TRANSLATION_HEADING}</h2> {/* Removed font-serif */}
+              <div className="text-base text-neutral-700 whitespace-pre-wrap"> {/* Removed font-newspaper-body */}
                 {intermediateTranslation}
               </div>
             </div>
@@ -409,7 +411,7 @@ const App: React.FC = () => {
                   <button
                     onClick={handleProofreadScript}
                     disabled={isProofreading || !generatedScript}
-                    className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold py-3 px-8 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-base"
+                    className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-base"
                     aria-label={UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
                   >
                     {UI_STRINGS_MY.BUTTON_PROOFREAD_AI}
@@ -421,23 +423,23 @@ const App: React.FC = () => {
               !isLoading && !error &&
               (selectedInputMode !== InputMode.FILE || fileContent) &&
               !(selectedInputMode === InputMode.TRANSLATE_DEVELOP && intermediateTranslation) &&
-              <div className="mt-8 p-6 bg-stone-50 rounded-none border border-neutral-200 text-center text-neutral-500 font-serif" aria-label="Information message">
+              <div className="mt-6 md:mt-8 p-4 md:p-6 bg-stone-100 rounded-lg border border-neutral-200 text-center text-neutral-500" aria-label="Information message"> {/* Adjusted padding & margin */}
                   {UI_STRINGS_MY.NO_SCRIPT_YET}
               </div>
           )}
           {isProofreading && <LoadingSpinner message={UI_STRINGS_MY.MESSAGE_PROOFREADING_LOADING} />}
           {proofreadingError && <ErrorMessage message={proofreadingError} />}
           {proofreadScript && !isProofreading && (
-            <div className="mt-8 p-6 bg-purple-50 rounded-none border border-purple-200">
-              <h2 className="font-serif text-2xl font-bold text-purple-800 mb-4 pb-2 border-b border-purple-300">{UI_STRINGS_MY.SECTION_TITLE_EDITED_SCRIPT}</h2>
-              <div className="font-newspaper-body text-base text-neutral-700 whitespace-pre-wrap edited-script-display">
+            <div className="mt-6 md:mt-8 p-4 md:p-6 bg-purple-50 rounded-lg border border-purple-200"> {/* Adjusted padding & margin */}
+              <h2 className="text-xl md:text-2xl font-bold text-purple-800 mb-3 md:mb-4 pb-2 border-b border-purple-300">{UI_STRINGS_MY.SECTION_TITLE_EDITED_SCRIPT}</h2> {/* Adjusted text size & margin */}
+              <div className="text-sm md:text-base text-neutral-700 whitespace-pre-wrap edited-script-display"> {/* Adjusted text size */}
                 {proofreadScript}
               </div>
-              <div className="mt-6 text-center">
+              <div className="mt-4 md:mt-6 text-center"> {/* Adjusted margin */}
                 <button
                   onClick={handleDownloadEditedScript}
                   disabled={!proofreadScript}
-                  className="bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-6 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm"
+                  className="w-full sm:w-auto bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-4 sm:px-5 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-xs sm:text-sm" /* Adjusted padding & text size */
                   aria-label={UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
                 >
                   {UI_STRINGS_MY.BUTTON_DOWNLOAD_EDITED_SCRIPT}
@@ -446,10 +448,10 @@ const App: React.FC = () => {
             </div>
           )}
           {generatedScript && !proofreadScript && !isProofreading && (
-            <div className="mt-8 text-center">
+            <div className="mt-6 md:mt-8 text-center"> {/* Adjusted margin */}
               <button
                   onClick={downloadScript}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 px-6 rounded-sm shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm"
+                  className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 px-4 sm:px-5 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-xs sm:text-sm" /* Adjusted padding & text size */
                   aria-label={UI_STRINGS_MY.DOWNLOAD_SCRIPT_BUTTON}
               >
                   {UI_STRINGS_MY.DOWNLOAD_SCRIPT_BUTTON}

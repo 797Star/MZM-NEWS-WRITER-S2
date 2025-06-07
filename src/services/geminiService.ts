@@ -73,7 +73,7 @@ const fetchNewsArticles = async (query: string): Promise<{ content: string; sour
     try {
       const errorText = await response.text();
       errorMsg += `: ${errorText}`;
-    } catch {}
+    } catch { /* ignore error, main error is already set */ }
     throw new Error(errorMsg);
   }
   const data = await response.json();
@@ -160,7 +160,7 @@ const fetchBurmeseNewsContent = async (url: string): Promise<{ content: string; 
       content: cleaned,
       sources: [{ content: cleaned, url, title: url }],
     };
-  } catch (e) {
+  } catch { // _e removed
     return { content: '', sources: [] };
   }
 };
@@ -368,7 +368,7 @@ export const generateScriptFromUrl = async (
 `;
       extraPrompt = 'သတင်းအထူးအစီအစဉ်အတွက် Feature News format ကို အသုံးပြုပါ။';
       break;
-    default:
+    default: { // Added braces for no-case-declarations
       // If not a special length, fall back to previous logic
       let isInvestigative = false;
       switch (tone) {
@@ -426,6 +426,7 @@ Blog post ဖွဲ့စည်းပုံ:
 `;
         extraPrompt = 'Greeting နှင့် call to action မထည့်ပါနှင့်။ Blog post format ကို paragraph by paragraph ဖြင့်ရေးပါ။';
       }
+    } // Added braces for no-case-declarations
   }
   const prompt = `အောက်ပါ မြန်မာသတင်းဆောင်းပါးအကြောင်းအရာကို မူရင်းအချက်အလက်များကိုသာ အသုံးပြု၍ ${typeInstruction} ${length} အတိုင်း ${toneInstruction} သံဖြင့် မြန်မာဘာသာဖြင့် ပြန်ဆိုရေးသားပါ။ မည်သည့်အချက်အလက်အသစ်မှ မထည့်ပါနှင့်။ မူရင်းအချက်အလက်များကိုသာ အသုံးပြုပါ။\n\n${extraPrompt}\n\nသတင်း script ကို အောက်ပါနမူနာပုံစံနှင့်ဖွဲ့စည်းပုံအတိုင်းသာရေးပါ။\n${styleGuide}\n\nသတင်းအကြောင်းအရာ:\n${content}`;
   const result = await makeGeminiRequest(prompt);
@@ -514,7 +515,7 @@ export const performTranslationAndScriptGeneration = async (
         .trim();
       sources = [{ content: articleContent, url: englishUrl, title: englishUrl }];
     }
-  } catch (e) {
+  } catch { // _e removed
     throw new Error('Failed to fetch or parse the English news article. Please check the URL or try a different one.');
   }
   if (!articleContent || articleContent.length < 100) {
