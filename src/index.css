@@ -10,3 +10,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .bg-gradient-deep-blue {
+    background-image: linear-gradient(to right, #1E40AF, #1E3A8A); /* primary.dark to primary.DEFAULT */
+  }
+  .bg-gradient-warm-amber {
+    background-image: linear-gradient(to right, #D97706, #F59E0B); /* accent.dark to accent.DEFAULT */
+  }
+}

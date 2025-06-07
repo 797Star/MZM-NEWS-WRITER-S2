@@ -328,35 +328,68 @@ const App: React.FC = () => {
   }
 
   const ProtectedLayout = () => (
-    <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-neutral-50"> {/* Added bg-neutral-50 for overall page */}
-      <header className="text-center mb-8 md:mb-12 relative"> {/* Adjusted bottom margin */}
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-800 border-b-4 border-neutral-700 pb-2 sm:pb-3"> {/* Adjusted font size & padding */}
-          {UI_STRINGS_MY.APP_TITLE}
-        </h1>
+    <div className="min-h-screen flex flex-col bg-neutral-100"> {/* Changed to flex-col and global bg */}
+      <header className="bg-gradient-deep-blue shadow-lg"> {/* Changed to gradient */}
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <Link to="/" className="text-white text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity">
+                BM_LABEL_AppName
+              </Link>
+            </div>
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-4">
+                <Link
+                  to="/"
+                  className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  BM_LABEL_GenerateScript
+                </Link>
+                <Link
+                  to="/content-optimizer"
+                  className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  BM_LABEL_OptimizeContent
+                </Link>
+                {/* Placeholder for Proofread & Edit - adjust link as needed */}
+                <Link
+                  to="/" // Assuming it links to a relevant page or main page for now
+                  className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  BM_LABEL_ProofreadEdit
+                </Link>
+              </div>
+            </div>
+            {/* Mobile menu button - basic structure, no functionality yet */}
+            <div className="-mr-2 flex md:hidden">
+              <button type="button" className="bg-primary-dark inline-flex items-center justify-center p-2 rounded-md text-neutral-300 hover:text-white hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-dark focus:ring-white">
+                <span className="sr-only">Open main menu</span>
+                {/* Icon for menu (Heroicon - menu) */}
+                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </nav>
       </header>
-      {session && session.user && <UserProfile user={session.user} />} {/* UserProfile itself will be made responsive */}
-      <DisclaimerMessage /> {/* DisclaimerMessage might need responsive text if long */}
 
-      {/* Add navigation link here */}
-      <nav className="text-center my-4 md:my-6"> {/* Adjusted margin */}
-        {/* The Link component is suitable here and can be styled as a button */}
-        <Link
-          to="/content-optimizer"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-base md:text-lg" /* Adjusted text size */
-        >
-          Optimize Content
-        </Link>
-      </nav>
+      {/* Content below header */}
+      <div className="flex-grow py-8 sm:py-12 px-4 sm:px-6 lg:px-8"> {/* Original padding for content area */}
+        {session && session.user && <UserProfile user={session.user} />}
+        <DisclaimerMessage />
+        <Outlet />
+      </div>
 
-      <Outlet />
-       <footer className="text-center mt-10 md:mt-12 py-5 md:py-6 border-t border-neutral-200"> {/* Adjusted padding & margin */}
-        <p className="text-xs sm:text-sm text-neutral-500">&copy; {new Date().getFullYear()} MZM News Writer. All rights reserved.</p> {/* Adjusted text size */}
+       <footer className="bg-neutral-800 text-neutral-300 p-4 text-center text-xs">
+        <p>BM_LABEL_Copyright &copy; {new Date().getFullYear()}</p>
       </footer>
     </div>
   );
 
   const MainAppContent = () => (
-    <main className="max-w-4xl mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-xl border border-neutral-200"> {/* Adjusted padding */}
+    // MainAppContent's own background and max-width are still relevant for the content it holds
+    <main className="max-w-4xl mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-xl border border-neutral-200">
       {error === UI_STRINGS_MY.ERROR_API_KEY_MISSING && !isLoading && (
          <ErrorMessage message={UI_STRINGS_MY.ERROR_API_KEY_MISSING} />
       )}
@@ -383,7 +416,7 @@ const App: React.FC = () => {
             <button
               onClick={handleGenerateScript}
               disabled={isGenerateDisabled()}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-400 text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-base"
+              className="w-full sm:w-auto bg-gradient-deep-blue hover:opacity-90 text-white font-semibold py-2 px-4 sm:py-3 sm:px-6 rounded-md shadow-md hover:shadow-lg disabled:bg-neutral-400 disabled:opacity-70 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-base" /* Updated to gradient */
               aria-live="polite"
               aria-label={getButtonText()}
             >

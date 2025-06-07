@@ -12,7 +12,7 @@ const ContentOptimizerScreen: React.FC = () => {
 
   const handleAnalyzeContent = async () => {
     if (!newsContent.trim()) {
-      setError("Please enter some content to analyze.");
+      setError("BM_ERROR_NoContentToAnalyze"); // Changed to placeholder
       return;
     }
     setIsLoading(true);
@@ -34,7 +34,7 @@ const ContentOptimizerScreen: React.FC = () => {
     type: 'title' | 'question'
   ) => {
     if (!suggestions || suggestions.length === 0) {
-      return <p className="text-neutral-500">No suggestions available.</p>;
+      return <p className="text-neutral-500">BM_MESSAGE_NoSuggestions</p>; // Changed to placeholder
     }
     return (
       <ul className="list-disc pl-5 space-y-1 text-neutral-700">
@@ -48,58 +48,63 @@ const ContentOptimizerScreen: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-      <h2 className="text-2xl sm:text-3xl font-bold text-neutral-800 text-center mb-8">
-        News Content Optimizer & Suggester
-      </h2>
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+      <h1 className="text-2xl sm:text-3xl font-bold text-primary-dark text-center mb-6 sm:mb-8">
+        BM_LABEL_ContentOptimizerTitle
+      </h1>
 
-      <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
+      {/* Input Card */}
+      <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
+        <label htmlFor="newsContent" className="block text-sm font-medium text-neutral-700 mb-2">
+          BM_LABEL_EnterYourContent
+        </label>
         <textarea
+          id="newsContent"
           value={newsContent}
           onChange={(e) => setNewsContent(e.target.value)}
-          placeholder="Paste your news article content here..."
+          placeholder="BM_PLACEHOLDER_PasteContent"
           rows={10}
-          className="w-full p-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
+          className="w-full p-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150 resize-y"
           disabled={isLoading}
         />
         <button
           onClick={handleAnalyzeContent}
           disabled={isLoading || !newsContent.trim()}
-          className="mt-4 w-full py-2 px-4 sm:py-3 sm:px-5 bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-400 text-white font-semibold rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm sm:text-base" /* Adjusted padding & text size */
+          className="mt-6 w-full py-3 px-5 bg-gradient-deep-blue hover:opacity-90 text-white font-semibold rounded-md shadow-md hover:shadow-lg disabled:bg-neutral-400 disabled:opacity-70 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Changed to gradient, adjusted hover */
         >
-          {isLoading ? 'Analyzing...' : 'Analyze Content'}
+          {isLoading ? 'BM_LABEL_Analyzing' : 'BM_LABEL_AnalyzeContent'}
         </button>
       </div>
 
-      {isLoading && <LoadingSpinner message="Analyzing content, please wait..." />}
-      {error && <ErrorMessage message={error} />}
+      {isLoading && <LoadingSpinner message="BM_LABEL_LoadingAnalysis" />}
+      {error && <ErrorMessage message={error} />} {/* ErrorMessage component should use text-red-500 for consistency */}
 
       {analysisResult && !isLoading && (
-        <div className="space-y-4 sm:space-y-6"> {/* Adjusted spacing */}
-          {/* Word Count & Sentiment */}
-          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
-            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">Content Metrics</h3> {/* Adjusted text size & margin */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4"> {/* Adjusted gap */}
-              <p className="text-sm sm:text-base text-neutral-600"> {/* Adjusted text size */}
-                <strong>Word Count:</strong> {analysisResult.wordCount}
+        <div className="space-y-6 sm:space-y-8">
+          {/* Content Metrics Card */}
+          <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_ContentMetrics</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <p className="text-sm sm:text-base text-neutral-700">
+                <strong>BM_LABEL_WordCount:</strong> {analysisResult.wordCount}
               </p>
-              <p className="text-sm sm:text-base text-neutral-600"> {/* Adjusted text size */}
-                <strong>Sentiment:</strong> <span className={`font-medium ${
-                  analysisResult.sentiment === 'Positive' ? 'text-green-500' : // Adjusted shade
-                  analysisResult.sentiment === 'Negative' ? 'text-red-500' :   // Adjusted shade
-                  analysisResult.sentiment === 'Neutral' ? 'text-sky-500' :
-                  'text-neutral-500'
+              <p className="text-sm sm:text-base text-neutral-700">
+                <strong>BM_LABEL_Sentiment:</strong> <span className={`font-medium ${
+                  analysisResult.sentiment === 'Positive' ? 'text-success' :
+                  analysisResult.sentiment === 'Negative' ? 'text-red-500' : // Consistent with other error texts
+                  analysisResult.sentiment === 'Neutral' ? 'text-accent-dark' : // Using accent for neutral for variety
+                  'text-neutral-600'
                 }`}>
                   {analysisResult.sentiment}
                 </span>
               </p>
             </div>
              {analysisResult.keywords && analysisResult.keywords.length > 0 && (
-                <div className="mt-3 sm:mt-4"> {/* Adjusted margin */}
-                    <h4 className="text-sm sm:text-md font-semibold text-neutral-600 mb-1.5 sm:mb-2">Identified Keywords:</h4> {/* Adjusted text size & margin */}
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2"> {/* Adjusted gap */}
+                <div className="mt-4">
+                    <h4 className="text-sm sm:text-md font-semibold text-neutral-700 mb-2">BM_LABEL_IdentifiedKeywords:</h4>
+                    <div className="flex flex-wrap gap-2">
                         {analysisResult.keywords.map((keyword, index) => (
-                            <span key={index} className="bg-sky-100 text-sky-800 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm shadow-sm"> {/* Corrected padding & text size */}
+                            <span key={index} className="bg-accent-light text-accent-dark px-3 py-1 rounded-full text-xs sm:text-sm font-medium shadow-sm">
                                 {keyword}
                             </span>
                         ))}
@@ -108,21 +113,21 @@ const ContentOptimizerScreen: React.FC = () => {
             )}
           </div>
 
-          {/* SEO Title Suggestions */}
-          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
-            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">SEO Title Suggestions</h3> {/* Adjusted text size & margin */}
-            {renderSuggestionsList(analysisResult.seoTitleSuggestions, 'title')} {/* Assuming renderSuggestionsList uses responsive text internally or defaults are fine */}
+          {/* SEO Title Suggestions Card */}
+          <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_SEOSuggestions</h3>
+            {renderSuggestionsList(analysisResult.seoTitleSuggestions, 'title')}
           </div>
 
-          {/* Follow-up Topic Suggestions */}
-          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
-            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">Follow-up Topic Questions</h3> {/* Adjusted text size & margin */}
+          {/* Follow-up Topic Suggestions Card */}
+          <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_FollowUpTopics</h3>
             {renderSuggestionsList(analysisResult.followupTopicSuggestions, 'question')}
           </div>
 
-          {/* Related Topic Suggestions */}
-          <div className="bg-white p-4 sm:p-6 shadow-xl rounded-lg border border-neutral-200"> {/* Adjusted padding */}
-            <h3 className="text-lg sm:text-xl font-semibold text-neutral-700 mb-3 sm:mb-4">Related Topic Questions</h3> {/* Adjusted text size & margin */}
+          {/* Related Topic Suggestions Card */}
+          <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_RelatedTopics</h3>
             {renderSuggestionsList(analysisResult.relatedTopicSuggestions, 'question')}
           </div>
         </div>

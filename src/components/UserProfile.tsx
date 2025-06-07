@@ -45,42 +45,48 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   const initials = getInitials(user.email);
 
   return (
-    <div className="max-w-md mx-auto bg-white p-4 sm:p-6 my-8 rounded-lg shadow-xl border border-neutral-200 text-center space-y-4 sm:space-y-6"> {/* Adjusted padding & space-y */}
+    <div className="max-w-md mx-auto bg-white p-6 sm:p-8 my-8 rounded-xl shadow-2xl border border-neutral-200 text-center space-y-6">
       <div> {/* Group for main profile info + avatar */}
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-neutral-800">User Profile</h2> {/* Responsive text & margin */}
+        <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-primary-dark">BM_LABEL_UserProfileTitle</h2>
 
         {avatarUrl && !avatarLoadError ? (
         <img
           src={avatarUrl}
           alt="User Avatar"
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-3 sm:mb-4 shadow-md border-2 border-neutral-300" /* Responsive size & margin */
+          className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-4 shadow-lg border-2 border-primary"
           onError={() => setAvatarLoadError(true)}
         />
       ) : (
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-3 sm:mb-4 bg-blue-500 text-white flex items-center justify-center text-2xl sm:text-3xl font-semibold shadow-md border-2 border-blue-600"> {/* Responsive size, text & margin */}
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-4 bg-primary text-white flex items-center justify-center text-3xl sm:text-4xl font-semibold shadow-lg border-2 border-primary-dark">
           {initials}
         </div>
       )}
 
       {user.email && (
-        <p className="text-neutral-600 mb-2 text-base sm:text-lg"> {/* Responsive text */}
-          {user.email}
-        </p>
+        <div className="mb-2">
+          <span className="block text-xs text-neutral-500">BM_LABEL_UserProfileEmail</span>
+          <p className="text-neutral-800 text-base sm:text-lg">
+            {user.email}
+          </p>
+        </div>
       )}
       {user.last_sign_in_at && (
-         <p className="text-neutral-500 text-xs sm:text-sm mb-4"> {/* Responsive text */}
-            Last signed in: {new Date(user.last_sign_in_at).toLocaleDateString()}
-         </p>
+         <div className="mb-4">
+           <span className="block text-xs text-neutral-500">BM_LABEL_UserProfileLastSignIn</span>
+           <p className="text-neutral-600 text-xs sm:text-sm">
+              {new Date(user.last_sign_in_at).toLocaleDateString()}
+           </p>
+         </div>
       )}
       {/* UID can be sensitive, consider if it needs to be displayed. For now, keeping it. */}
-      <p className="text-neutral-400 text-xs mb-4 sm:mb-6"> {/* Responsive margin */}
+      {/* <p className="text-neutral-400 text-xs mb-4 sm:mb-6">
         UID: {user.id}
-      </p>
+      </p> */}
       </div>
 
       {/* Password Change Section */}
       {user.app_metadata.provider === 'email' && (
-        <div className="border-t border-neutral-200 pt-4 sm:pt-6"> {/* Responsive padding */}
+        <div className="border-t border-neutral-200 pt-6 space-y-4">
           {!isChangingPassword ? (
             <button
               onClick={() => {
@@ -88,19 +94,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 setPasswordChangeMessage(null);
                 setPasswordChangeError(null);
               }}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm sm:text-base" /* Responsive text */
+              className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded-md shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Corrected padding */
             >
-              Change Password
+              BM_LABEL_ChangePasswordTitle
             </button>
           ) : (
             <form onSubmit={async (e) => {
               e.preventDefault();
               if (newPassword !== confirmNewPassword) {
-                setPasswordChangeError("New passwords do not match.");
+                setPasswordChangeError("BM_ERROR_PasswordsDoNotMatch");
                 return;
               }
               if (newPassword.length < 6) {
-                setPasswordChangeError("Password must be at least 6 characters long.");
+                setPasswordChangeError("BM_ERROR_PasswordTooShort");
                 return;
               }
               setIsUpdatingPassword(true);
@@ -109,19 +115,20 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               try {
                 const { error } = await supabase.auth.updateUser({ password: newPassword });
                 if (error) throw error;
-                setPasswordChangeMessage("Password updated successfully!");
+                setPasswordChangeMessage("BM_SUCCESS_PasswordUpdated");
                 setNewPassword('');
                 setConfirmNewPassword('');
                 setIsChangingPassword(false); // Hide form on success
               } catch (e: any) {
-                setPasswordChangeError(e.message || "Failed to update password.");
+                setPasswordChangeError(e.message || "BM_ERROR_FailedToUpdatePassword");
               } finally {
                 setIsUpdatingPassword(false);
               }
             }}>
-              <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-neutral-700">Change Password</h3> {/* Responsive text & margin */}
-              <div className="mb-3 sm:mb-4"> {/* Responsive margin */}
-                <label htmlFor="newPassword" className="block text-xs sm:text-sm font-medium text-neutral-700 mb-1 text-left">New Password</label> {/* Responsive text */}
+              <h3 className="text-lg sm:text-xl font-semibold mb-4 text-primary-dark">BM_LABEL_ChangePasswordTitle</h3>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-neutral-700 mb-1 text-left">BM_LABEL_NewPassword</label>
                 <input
                   type="password"
                   id="newPassword"
@@ -129,12 +136,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="New password"
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150"
+                  placeholder="BM_PLACEHOLDER_EnterNewPassword"
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-neutral-700 mb-1 text-left">Confirm New Password</label>
+              <div> {/* Removed mb-4 from here, space-y-4 on parent handles it */}
+                <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-neutral-700 mb-1 text-left">BM_LABEL_ConfirmNewPassword</label>
                 <input
                   type="password"
                   id="confirmNewPassword"
@@ -142,19 +149,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Confirm new password"
+                  className="w-full px-4 py-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150"
+                  placeholder="BM_PLACEHOLDER_ConfirmNewPassword"
                 />
               </div>
-              {passwordChangeError && <p className="mb-2 text-red-600 text-sm">{passwordChangeError}</p>}
-              {passwordChangeMessage && <p className="mb-2 text-green-600 text-sm">{passwordChangeMessage}</p>}
-              <div className="flex flex-col sm:flex-row gap-3">
+              {passwordChangeError && <p className="mb-2 text-red-500 text-sm">{passwordChangeError}</p>}
+              {passwordChangeMessage && <p className="mb-2 text-success text-sm">{passwordChangeMessage}</p>}
+              <div className="flex flex-col sm:flex-row gap-3 pt-2"> {/* Added pt-2 for slight separation */}
                 <button
                   type="submit"
                   disabled={isUpdatingPassword}
-                  className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md shadow-md disabled:bg-green-400 transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  className="w-full sm:flex-1 bg-gradient-deep-blue hover:opacity-90 text-white font-semibold py-2 px-5 rounded-md shadow-md hover:shadow-lg disabled:bg-neutral-400 disabled:opacity-70 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Corrected py-2.5 to py-2 */
                 >
-                  {isUpdatingPassword ? 'Updating...' : 'Update Password'}
+                  {isUpdatingPassword ? 'BM_LABEL_UpdatingPassword' : 'BM_LABEL_UpdatePassword'}
                 </button>
                 <button
                   type="button"
@@ -166,9 +173,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                     setPasswordChangeMessage(null);
                   }}
                   disabled={isUpdatingPassword}
-                  className="w-full sm:flex-1 bg-neutral-500 hover:bg-neutral-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
+                  className="w-full sm:flex-1 bg-neutral-600 hover:bg-neutral-700 text-white font-semibold py-2 px-5 rounded-md shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 text-sm sm:text-base" /* Corrected py-2.5 to py-2 */
                 >
-                  Cancel
+                  BM_LABEL_Cancel
                 </button>
               </div>
             </form>
@@ -180,9 +187,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
       <div className="border-t border-neutral-200 pt-6 mt-6">
         <button
           onClick={handleSignOut}
-          className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          className="w-full sm:w-auto bg-accent hover:bg-accent-dark text-white font-semibold py-2 px-5 rounded-md shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent-light focus:ring-offset-2 text-sm sm:text-base" /* Corrected py-2.5 to py-2 */
         >
-          Sign Out
+          BM_LABEL_SignOut
         </button>
       </div>
     </div>
