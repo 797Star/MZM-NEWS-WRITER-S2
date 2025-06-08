@@ -15,18 +15,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   const [passwordChangeError, setPasswordChangeError] = useState<string | null>(null);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
-  const handleSignOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      // Sign out success will be handled by onAuthStateChange in App.tsx
-    } catch (e: any) {
-      console.error("Error signing out: ", e.message);
-      // Optionally, display an error message to the user
-    }
-  };
+  // handleSignOut function is now moved to App.tsx
 
   // Attempt to get avatar_url from user_metadata
+  // Avatar display in header is separate, this is for the main profile page avatar
   const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
 
   // Generate initials from email for fallback
@@ -183,7 +175,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
           )}
         </div>
       )}
-
       {/* Sign Out Button - separated for clarity and always visible */}
       <div className="border-t border-neutral-200 pt-6 mt-6">
         <button
@@ -193,6 +184,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
           SignOut
         </button>
       </div>
+      {/* Sign Out Button is now in the header dropdown, so removed from here */}
     </div>
   );
 };
