@@ -608,14 +608,14 @@ export default App;
                 </div>
               )}
             </>
-          ) : (
+          ) :
               !isLoading && !error &&
               (selectedInputMode !== InputMode.FILE || fileContent) &&
               !(selectedInputMode === InputMode.TRANSLATE_DEVELOP && intermediateTranslation) &&
               <div className="mt-6 md:mt-8 p-4 md:p-6 bg-stone-100 rounded-lg border border-neutral-200 text-center text-neutral-500" aria-label="Information message"> {/* Adjusted padding & margin */}
                   {UI_STRINGS_MY.NO_SCRIPT_YET}
               </div>
-          )}
+          }
           {isProofreading && <LoadingSpinner message={UI_STRINGS_MY.MESSAGE_PROOFREADING_LOADING} />}
           {proofreadingError && <ErrorMessage message={proofreadingError} />}
           {proofreadScript && !isProofreading && (
