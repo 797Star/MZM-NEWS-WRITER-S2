@@ -394,7 +394,7 @@ const App: React.FC = () => {
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <Link to="/" className="text-white text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity">
-                  BM_LABEL_AppName
+                  Burmese News Writer 
                 </Link>
               </div>
               <div className="hidden md:block">
@@ -408,7 +408,7 @@ const App: React.FC = () => {
                     }
                     end // Important for matching root path exactly
                   >
-                    BM_LABEL_GenerateScript
+                    GenerateScript
                   </NavLink>
                   <NavLink
                     to="/content-optimizer"
@@ -418,7 +418,7 @@ const App: React.FC = () => {
                         : 'text-neutral-100 hover:bg-primary-light hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors'
                     }
                   >
-                    BM_LABEL_OptimizeContent
+                    OptimizeContent
                   </NavLink>
                   <NavLink
                     to="/" // Assuming it links to a relevant page or main page for now
@@ -429,7 +429,7 @@ const App: React.FC = () => {
                     }
                     // Remove 'end' if this is meant to be active on other sub-routes of "/" or change its 'to' prop
                   >
-                    BM_LABEL_ProofreadEdit
+                    ProofreadEdit
                   </NavLink>
                   {/* Avatar and Dropdown */}
                   {user && (
@@ -475,7 +475,7 @@ const App: React.FC = () => {
                             id="user-menu-item-0"
                             onClick={() => setProfileDropdownOpen(false)}
                           >
-                            BM_LABEL_ViewProfile
+                            ViewProfile
                           </Link>
                           <button
                             onClick={() => {
@@ -487,7 +487,7 @@ const App: React.FC = () => {
                             tabIndex={-1}
                             id="user-menu-item-1"
                           >
-                            BM_LABEL_Logout
+                            Logout
                           </button>
                         </div>
                       )}
@@ -523,7 +523,7 @@ const App: React.FC = () => {
         </div>
 
         <footer className="bg-neutral-800 text-neutral-300 p-4 text-center text-xs">
-          <p>BM_LABEL_Copyright &copy; {new Date().getFullYear()}</p>
+          <p>Copyright &copy; {new Date().getFullYear()}</p>
         </footer>
       </div>
     );
