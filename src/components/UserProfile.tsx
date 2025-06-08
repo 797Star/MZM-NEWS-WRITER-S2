@@ -94,11 +94,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
             <form onSubmit={async (e) => {
               e.preventDefault();
               if (newPassword !== confirmNewPassword) {
-                setPasswordChangeError("BM_ERROR_PasswordsDoNotMatch");
+                setPasswordChangeError("PasswordsDoNotMatch");
                 return;
               }
               if (newPassword.length < 6) {
-                setPasswordChangeError("BM_ERROR_PasswordTooShort");
+                setPasswordChangeError("PasswordTooShort");
                 return;
               }
               setIsUpdatingPassword(true);
@@ -107,12 +107,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               try {
                 const { error } = await supabase.auth.updateUser({ password: newPassword });
                 if (error) throw error;
-                setPasswordChangeMessage("BM_SUCCESS_PasswordUpdated");
+                setPasswordChangeMessage("PasswordUpdated");
                 setNewPassword('');
                 setConfirmNewPassword('');
                 setIsChangingPassword(false); // Hide form on success
               } catch (e: any) {
-                setPasswordChangeError(e.message || "BM_ERROR_FailedToUpdatePassword");
+                setPasswordChangeError(e.message || "FailedToUpdatePassword");
               } finally {
                 setIsUpdatingPassword(false);
               }
@@ -129,7 +129,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   required
                   minLength={6}
                   className="w-full px-4 py-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150"
-                  placeholder="BM_PLACEHOLDER_EnterNewPassword"
+                  placeholder="EnterNewPassword"
                 />
               </div>
               <div> {/* Removed mb-4 from here, space-y-4 on parent handles it */}
@@ -142,7 +142,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   required
                   minLength={6}
                   className="w-full px-4 py-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150"
-                  placeholder="BM_PLACEHOLDER_ConfirmNewPassword"
+                  placeholder="ConfirmNewPassword"
                 />
               </div>
               </div> {/* Closing div for space-y-4 that wraps the input fields */}
@@ -154,7 +154,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   disabled={isUpdatingPassword}
                   className="w-full sm:flex-1 bg-gradient-deep-blue hover:opacity-90 text-white font-semibold py-2 px-5 rounded-md shadow-md hover:shadow-lg disabled:bg-neutral-400 disabled:opacity-70 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Corrected py-2.5 to py-2 */
                 >
-                  {isUpdatingPassword ? 'BM_LABEL_UpdatingPassword' : 'BM_LABEL_UpdatePassword'}
+                  {isUpdatingPassword ? 'UpdatingPassword' : 'UpdatePassword'}
                 </button>
                 <button
                   type="button"
@@ -168,14 +168,22 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                   disabled={isUpdatingPassword}
                   className="w-full sm:flex-1 bg-neutral-600 hover:bg-neutral-700 text-white font-semibold py-2 px-5 rounded-md shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 text-sm sm:text-base" /* Corrected py-2.5 to py-2 */
                 >
-                  BM_LABEL_Cancel
+                  Cancel
                 </button>
               </div>
             </form>
           )}
         </div>
       )}
-
+      {/* Sign Out Button - separated for clarity and always visible */}
+      <div className="border-t border-neutral-200 pt-6 mt-6">
+        <button
+          onClick={handleSignOut}
+          className="w-full sm:w-auto bg-accent hover:bg-accent-dark text-white font-semibold py-2 px-5 rounded-md shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent-light focus:ring-offset-2 text-sm sm:text-base" /* Corrected py-2.5 to py-2 */
+        >
+          SignOut
+        </button>
+      </div>
       {/* Sign Out Button is now in the header dropdown, so removed from here */}
     </div>
   );

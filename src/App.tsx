@@ -327,6 +327,37 @@ const App: React.FC = () => {
     );
   }
 
+  const ProtectedLayout = () => (
+    <div className="min-h-screen flex flex-col bg-neutral-100"> {/* Changed to flex-col and global bg */}
+      <header className="bg-gradient-deep-blue shadow-lg"> {/* Changed to gradient */}
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <Link to="/" className="text-white text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity">
+                AppName
+              </Link>
+            </div>
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-4">
+                <Link
+                  to="/"
+                  className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  GenerateScript
+                </Link>
+                <Link
+                  to="/content-optimizer"
+                  className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  OptimizeContent
+                </Link>
+                {/* Placeholder for Proofread & Edit - adjust link as needed */}
+                <Link
+                  to="/" // Assuming it links to a relevant page or main page for now
+                  className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  ProofreadEdit
+=======
   const handleSignOut = async () => { // Moved from UserProfile
     try {
       const { error } = await supabase.auth.signOut();
@@ -509,25 +540,11 @@ const App: React.FC = () => {
           </nav>
         </header>
 
-        {/* Content below header */}
-        <div className="flex-grow py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-          {/* Conditionally render UserProfile here ONLY if not on /profile path to avoid duplication.
-              Or, always render it if it's just a container for user-related settings not shown on /profile.
-              For now, the main UserProfile page is separate via routing.
-              The old line was: {session && session.user && <UserProfile user={session.user} />}
-              This needs to be removed or rethought if UserProfile is also a full page.
-              Let's remove it from here, as /profile route will handle displaying UserProfile component.
-          */}
-          <DisclaimerMessage />
-          <Outlet />
-        </div>
-
-        <footer className="bg-neutral-800 text-neutral-300 p-4 text-center text-xs">
-          <p>Copyright &copy; {new Date().getFullYear()}</p>
-        </footer>
-      </div>
-    );
-  };
+       <footer className="bg-neutral-800 text-neutral-300 p-4 text-center text-xs">
+        <p>Copyright &copy; {new Date().getFullYear()}</p>
+      </footer>
+    </div>
+  );
 
   const MainAppContent = () => (
     // MainAppContent's own background and max-width are still relevant for the content it holds

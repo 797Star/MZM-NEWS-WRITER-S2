@@ -112,7 +112,7 @@ const LoginScreen: React.FC = () => {
     <div className="min-h-screen flex flex-col justify-center items-center bg-neutral-200 px-4 py-8">
       <div className="bg-white p-8 sm:p-10 rounded-xl shadow-2xl max-w-md w-full border border-neutral-300">
         <h1 className="text-3xl sm:text-4xl font-bold text-primary-dark text-center mb-8">
-          Welcome
+        Welcome 
         </h1>
         <p className="mb-6 text-center text-neutral-600 text-sm sm:text-base">
           {isForgotPassword ? 'ResetPasswordPrompt' : (isSignUp ? 'CreateAccountPrompt' : 'SignInPrompt')}
