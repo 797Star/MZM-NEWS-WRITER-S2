@@ -47,7 +47,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
   return (
     <div className="max-w-md mx-auto bg-white p-6 sm:p-8 my-8 rounded-xl shadow-2xl border border-neutral-200 text-center space-y-6">
       <div> {/* Group for main profile info + avatar */}
-        <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-primary-dark">UserProfileTitle</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-primary-dark">User Profile</h2>
 
         {avatarUrl && !avatarLoadError ? (
         <img
@@ -64,7 +64,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
 
       {user.email && (
         <div className="mb-2">
-          <span className="block text-xs text-neutral-500">UserProfileEmail</span>
+          <span className="block text-xs text-neutral-500">User Profile Email</span>
           <p className="text-neutral-800 text-base sm:text-lg">
             {user.email}
           </p>
@@ -72,7 +72,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
       )}
       {user.last_sign_in_at && (
          <div className="mb-4">
-           <span className="block text-xs text-neutral-500">UserProfileLastSignIn</span>
+           <span className="block text-xs text-neutral-500">User Profile Last Sign In</span>
            <p className="text-neutral-600 text-xs sm:text-sm">
               {new Date(user.last_sign_in_at).toLocaleDateString()}
            </p>
@@ -96,7 +96,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
               }}
               className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded-md shadow-md hover:shadow-lg transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Corrected padding */
             >
-              ChangePasswordTitle
+              Change Password
             </button>
           ) : (
             <form onSubmit={async (e) => {
@@ -125,10 +125,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 setIsUpdatingPassword(false);
               }
             }}>
-              <h3 className="text-lg sm:text-xl font-semibold mb-4 text-primary-dark">ChangePasswordTitle</h3>
+              <h3 className="text-lg sm:text-xl font-semibold mb-4 text-primary-dark">Change Password</h3>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-neutral-700 mb-1 text-left">NewPassword</label>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-neutral-700 mb-1 text-left">New Password</label>
                 <input
                   type="password"
                   id="newPassword"
@@ -141,7 +141,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
                 />
               </div>
               <div> {/* Removed mb-4 from here, space-y-4 on parent handles it */}
-                <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-neutral-700 mb-1 text-left">ConfirmNewPassword</label>
+                <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-neutral-700 mb-1 text-left">Confirm New Password</label>
                 <input
                   type="password"
                   id="confirmNewPassword"
