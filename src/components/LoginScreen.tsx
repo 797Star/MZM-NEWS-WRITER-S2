@@ -112,10 +112,10 @@ const LoginScreen: React.FC = () => {
     <div className="min-h-screen flex flex-col justify-center items-center bg-neutral-200 px-4 py-8">
       <div className="bg-white p-8 sm:p-10 rounded-xl shadow-2xl max-w-md w-full border border-neutral-300">
         <h1 className="text-3xl sm:text-4xl font-bold text-primary-dark text-center mb-8">
-          LoginWelcome
+          Welcome
         </h1>
         <p className="mb-6 text-center text-neutral-600 text-sm sm:text-base">
-          {isForgotPassword ? 'ResetPasswordPrompt' : (isSignUp ? 'CreateAccountPrompt' : 'SignInPrompt')}
+          {isForgotPassword ? 'Reset Password' : (isSignUp ? 'Create Account' : 'Sign In')}
         </p>
 
         <form onSubmit={isForgotPassword ? handlePasswordResetRequest : handleEmailPasswordAuth} className="space-y-6">
@@ -128,7 +128,7 @@ const LoginScreen: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150"
-              placeholder="EnterEmail"
+              placeholder="Enter Email"
             />
           </div>
           {!isForgotPassword && (
@@ -156,7 +156,7 @@ const LoginScreen: React.FC = () => {
             disabled={isLoading}
             className="w-full py-3 px-5 bg-gradient-deep-blue hover:opacity-90 text-white font-semibold rounded-md shadow-md hover:shadow-lg disabled:bg-neutral-400 disabled:opacity-70 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Changed to gradient, adjusted hover */
           >
-            {isLoading ? 'Processing...' : (isForgotPassword ? 'SendResetLink' : (isSignUp ? 'SignUp' : 'SignIn'))}
+            {isLoading ? 'Processing...' : (isForgotPassword ? 'Send Reset Link' : (isSignUp ? 'Sign Up' : 'Sign In'))}
           </button>
         </form>
 
@@ -184,7 +184,7 @@ const LoginScreen: React.FC = () => {
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 <path d="M1 1h22v22H1z" fill="none"/>
               </svg>
-              SignInWithGoogle
+              Sign in with Google
             </button>
           </>
         )}
@@ -199,7 +199,7 @@ const LoginScreen: React.FC = () => {
               }}
               className="text-sm text-accent hover:text-accent-dark underline"
             >
-              BackToSignIn
+              Back to Sign in
             </button>
           ) : (
             <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -211,7 +211,7 @@ const LoginScreen: React.FC = () => {
                 }}
                 className="text-sm text-accent hover:text-accent-dark underline mb-2 sm:mb-0"
               >
-                {isSignUp ? 'AlreadyAccount' : 'SignUpPrompt'}
+                {isSignUp ? 'Already have Account?' : 'Sign Up'}
               </button>
               {!isSignUp && (
                   <button
@@ -222,7 +222,7 @@ const LoginScreen: React.FC = () => {
                     }}
                     className="text-sm text-accent hover:text-accent-dark underline"
                   >
-                    ForgotPassword
+                    Forgot Password?
                   </button>
               )}
             </div>
