@@ -50,19 +50,19 @@ const ContentOptimizerScreen: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
       <h1 className="text-2xl sm:text-3xl font-bold text-primary-dark text-center mb-6 sm:mb-8">
-        BM_LABEL_ContentOptimizerTitle
+        Analyze Content
       </h1>
 
       {/* Input Card */}
       <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
         <label htmlFor="newsContent" className="block text-sm font-medium text-neutral-700 mb-2">
-          BM_LABEL_EnterYourContent
+          Copy/Paste your generated content
         </label>
         <textarea
           id="newsContent"
           value={newsContent}
           onChange={(e) => setNewsContent(e.target.value)}
-          placeholder="BM_PLACEHOLDER_PasteContent"
+          placeholder="Paste Content"
           rows={10}
           className="w-full p-3 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-150 resize-y"
           disabled={isLoading}
@@ -72,24 +72,24 @@ const ContentOptimizerScreen: React.FC = () => {
           disabled={isLoading || !newsContent.trim()}
           className="mt-6 w-full py-3 px-5 bg-gradient-deep-blue hover:opacity-90 text-white font-semibold rounded-md shadow-md hover:shadow-lg disabled:bg-neutral-400 disabled:opacity-70 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 text-sm sm:text-base" /* Changed to gradient, adjusted hover */
         >
-          {isLoading ? 'BM_LABEL_Analyzing' : 'BM_LABEL_AnalyzeContent'}
+          {isLoading ? 'Analyzing' : 'Analyze Content'}
         </button>
       </div>
 
-      {isLoading && <LoadingSpinner message="BM_LABEL_LoadingAnalysis" />}
+      {isLoading && <LoadingSpinner message="Loading Analysis" />}
       {error && <ErrorMessage message={error} />} {/* ErrorMessage component should use text-red-500 for consistency */}
 
       {analysisResult && !isLoading && (
         <div className="space-y-6 sm:space-y-8">
           {/* Content Metrics Card */}
           <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
-            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_ContentMetrics</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">Content Metrics</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <p className="text-sm sm:text-base text-neutral-700">
-                <strong>BM_LABEL_WordCount:</strong> {analysisResult.wordCount}
+                <strong>WordCount:</strong> {analysisResult.wordCount}
               </p>
               <p className="text-sm sm:text-base text-neutral-700">
-                <strong>BM_LABEL_Sentiment:</strong> <span className={`font-medium ${
+                <strong>Sentiment:</strong> <span className={`font-medium ${
                   analysisResult.sentiment === 'Positive' ? 'text-success' :
                   analysisResult.sentiment === 'Negative' ? 'text-red-500' : // Consistent with other error texts
                   analysisResult.sentiment === 'Neutral' ? 'text-accent-dark' : // Using accent for neutral for variety
@@ -101,7 +101,7 @@ const ContentOptimizerScreen: React.FC = () => {
             </div>
              {analysisResult.keywords && analysisResult.keywords.length > 0 && (
                 <div className="mt-4">
-                    <h4 className="text-sm sm:text-md font-semibold text-neutral-700 mb-2">BM_LABEL_IdentifiedKeywords:</h4>
+                    <h4 className="text-sm sm:text-md font-semibold text-neutral-700 mb-2">Identified Keywords:</h4>
                     <div className="flex flex-wrap gap-2">
                         {analysisResult.keywords.map((keyword, index) => (
                             <span key={index} className="bg-accent-light text-accent-dark px-3 py-1 rounded-full text-xs sm:text-sm font-medium shadow-sm">
@@ -115,19 +115,19 @@ const ContentOptimizerScreen: React.FC = () => {
 
           {/* SEO Title Suggestions Card */}
           <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
-            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_SEOSuggestions</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4"> SEO Suggestions</h3>
             {renderSuggestionsList(analysisResult.seoTitleSuggestions, 'title')}
           </div>
 
           {/* Follow-up Topic Suggestions Card */}
           <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
-            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_FollowUpTopics</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">Follow Up Topics</h3>
             {renderSuggestionsList(analysisResult.followupTopicSuggestions, 'question')}
           </div>
 
           {/* Related Topic Suggestions Card */}
           <div className="bg-white p-6 sm:p-8 shadow-xl rounded-xl border border-neutral-200">
-            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">BM_LABEL_RelatedTopics</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-primary-dark mb-4">Related Topics</h3>
             {renderSuggestionsList(analysisResult.relatedTopicSuggestions, 'question')}
           </div>
         </div>
