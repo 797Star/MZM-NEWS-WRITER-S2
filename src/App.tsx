@@ -24,7 +24,7 @@ import {
   proofreadScriptWithAI,
 } from './services/geminiService';
 import { getApiKey, isApiKeyValid } from './services/envConfig';
-import { Routes, Route, Navigate, Outlet, Link, NavLink } from 'react-router-dom'; // Added NavLink
+import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom'; // Removed useNavigate
 import UpdatePasswordScreen from './components/UpdatePasswordScreen';
 import ContentOptimizerScreen from './components/ContentOptimizerScreen';
 
@@ -357,188 +357,29 @@ const App: React.FC = () => {
                   className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   ProofreadEdit
-=======
-  const handleSignOut = async () => { // Moved from UserProfile
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      // Successful sign out will trigger onAuthStateChange, App will re-render to show LoginScreen
-    } catch (e: any) {
-      console.error("Error signing out: ", e.message);
-    }
-  };
-
-  const ProtectedLayout: React.FC = () => { // Added React.FC type
-    const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
-    const user = session?.user; // Get user from session, ensure session is checked before use
-
-    // Avatar display logic
-    const [avatarLoadError, setAvatarLoadError] = useState(false); // Local state for avatar error in header
-    const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-    const getInitials = (email?: string): string => {
-      if (!email) return '?';
-      const localPart = email.split('@')[0];
-      if (!localPart) return '?'; // Handle empty local part like "@domain.com"
-
-      const nameParts = localPart.split(/[._-]/).filter(p => p.length > 0); // filter out empty strings
-
-      if (nameParts.length > 1 && nameParts[0] && nameParts[1]) {
-        return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
-      } else if (nameParts.length === 1 && nameParts[0] && nameParts[0].length >= 2) { // Single part, at least 2 chars
-        return (nameParts[0][0] + nameParts[0][1]).toUpperCase();
-      } else if (nameParts.length === 1 && nameParts[0]) { // Single part, 1 char
-         return nameParts[0][0].toUpperCase();
-      }
-      // Fallback for more complex cases or if no usable characters found
-      return localPart.length > 0 ? localPart[0].toUpperCase() : '?';
-    };
-    const initials = getInitials(user?.email);
-
-    // Close dropdown if clicked outside - basic version
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        const dropdownNode = document.getElementById('user-menu-button'); // Assuming avatar button has this ID
-        const menuNode = document.getElementById('user-menu-dropdown'); // Assuming dropdown has this ID
-
-        if (dropdownNode && !dropdownNode.contains(event.target as Node) &&
-            menuNode && !menuNode.contains(event.target as Node)) {
-          setProfileDropdownOpen(false);
-        }
-      };
-
-      if (isProfileDropdownOpen) {
-        document.addEventListener('mousedown', handleClickOutside);
-      } else {
-        document.removeEventListener('mousedown', handleClickOutside);
-      }
-
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, [isProfileDropdownOpen]);
-
-
-    return (
-      <div className="min-h-screen flex flex-col bg-neutral-100">
-        <header className="bg-gradient-deep-blue shadow-lg">
-          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <Link to="/" className="text-white text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity">
-                  Burmese News Writer 
                 </Link>
               </div>
-              <div className="hidden md:block">
-                <div className="ml-10 flex items-center space-x-4">
-                  <NavLink
-                    to="/"
-                    className={({ isActive }) =>
-                      isActive
-                        ? 'bg-primary-dark text-white px-3 py-2 rounded-md text-sm font-medium transition-colors'
-                        : 'text-neutral-100 hover:bg-primary-light hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors'
-                    }
-                    end // Important for matching root path exactly
-                  >
-                    GenerateScript
-                  </NavLink>
-                  <NavLink
-                    to="/content-optimizer"
-                    className={({ isActive }) =>
-                      isActive
-                        ? 'bg-primary-dark text-white px-3 py-2 rounded-md text-sm font-medium transition-colors'
-                        : 'text-neutral-100 hover:bg-primary-light hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors'
-                    }
-                  >
-                    OptimizeContent
-                  </NavLink>
-                  <NavLink
-                    to="/" // Assuming it links to a relevant page or main page for now
-                    className={({ isActive }) =>
-                      isActive // This will be active if current path is exactly "/" due to `end` on the first NavLink
-                        ? 'bg-primary-dark text-white px-3 py-2 rounded-md text-sm font-medium transition-colors'
-                        : 'text-neutral-100 hover:bg-primary-light hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors'
-                    }
-                    // Remove 'end' if this is meant to be active on other sub-routes of "/" or change its 'to' prop
-                  >
-                    ProofreadEdit
-                  </NavLink>
-                  {/* Avatar and Dropdown */}
-                  {user && (
-                    <div className="ml-3 relative">
-                      <div>
-                        <button
-                          type="button"
-                          className="max-w-xs bg-primary-dark rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-dark focus:ring-white"
-                          id="user-menu-button" // ID for click outside logic
-                          aria-expanded={isProfileDropdownOpen}
-                          aria-haspopup="true"
-                          onClick={() => setProfileDropdownOpen(!isProfileDropdownOpen)}
-                        >
-                          <span className="sr-only">Open user menu</span>
-                          {avatarUrl && !avatarLoadError ? (
-                            <img
-                              className="h-10 w-10 rounded-full border-2 border-white"
-                              src={avatarUrl}
-                              alt="User avatar"
-                              onError={() => setAvatarLoadError(true)}
-                            />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full border-2 border-white bg-primary-light flex items-center justify-center text-white font-semibold text-sm"> {/* Adjusted text size for small avatar */}
-                              {initials}
-                            </div>
-                          )}
-                        </button>
-                      </div>
-                      {isProfileDropdownOpen && (
-                        <div
-                          id="user-menu-dropdown" // ID for click outside logic
-                          className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
-                          role="menu"
-                          aria-orientation="vertical"
-                          aria-labelledby="user-menu-button"
-                          tabIndex={-1}
-                        >
-                          <Link
-                            to="/profile"
-                            className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-                            role="menuitem"
-                            tabIndex={-1}
-                            id="user-menu-item-0"
-                            onClick={() => setProfileDropdownOpen(false)}
-                          >
-                            ViewProfile
-                          </Link>
-                          <button
-                            onClick={() => {
-                              handleSignOut();
-                              setProfileDropdownOpen(false);
-                            }}
-                            className="block w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
-                            role="menuitem"
-                            tabIndex={-1}
-                            id="user-menu-item-1"
-                          >
-                            Logout
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* Mobile menu button - basic structure, no functionality yet */}
-              <div className="-mr-2 flex md:hidden">
-                <button type="button" className="bg-primary-dark inline-flex items-center justify-center p-2 rounded-md text-neutral-300 hover:text-white hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-dark focus:ring-white">
-                  <span className="sr-only">Open main menu</span>
-                  {/* Icon for menu (Heroicon - menu) */}
-                  <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
-              </div>
             </div>
-          </nav>
-        </header>
+            {/* Mobile menu button - basic structure, no functionality yet */}
+            <div className="-mr-2 flex md:hidden">
+              <button type="button" className="bg-primary-dark inline-flex items-center justify-center p-2 rounded-md text-neutral-300 hover:text-white hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-dark focus:ring-white">
+                <span className="sr-only">Open main menu</span>
+                {/* Icon for menu (Heroicon - menu) */}
+                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      {/* Content below header */}
+      <div className="flex-grow py-8 sm:py-12 px-4 sm:px-6 lg:px-8"> {/* Original padding for content area */}
+        {session && session.user && <UserProfile user={session.user} />}
+        <DisclaimerMessage />
+        <Outlet />
+      </div>
 
        <footer className="bg-neutral-800 text-neutral-300 p-4 text-center text-xs">
         <p>Copyright &copy; {new Date().getFullYear()}</p>
@@ -551,20 +392,6 @@ const App: React.FC = () => {
     <main className="max-w-4xl mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-xl border border-neutral-200">
       {error === UI_STRINGS_MY.ERROR_API_KEY_MISSING && !isLoading && (
          <ErrorMessage message={UI_STRINGS_MY.ERROR_API_KEY_MISSING} />
-                >
-        <Route index element={<MainAppContent />} />
-        <Route path="content-optimizer" element={<ContentOptimizerScreen />} />
-        {/* Add route for UserProfile page if session exists */}
-        {session && session.user && (
-          <Route path="profile" element={<UserProfile user={session.user} />} />
-        )}
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
-};
-
-export default App;
       )}
       {apiKeyExists && (
         <>
@@ -625,14 +452,14 @@ export default App;
                 </div>
               )}
             </>
-          ) :
+          ) : (
               !isLoading && !error &&
               (selectedInputMode !== InputMode.FILE || fileContent) &&
               !(selectedInputMode === InputMode.TRANSLATE_DEVELOP && intermediateTranslation) &&
               <div className="mt-6 md:mt-8 p-4 md:p-6 bg-stone-100 rounded-lg border border-neutral-200 text-center text-neutral-500" aria-label="Information message"> {/* Adjusted padding & margin */}
                   {UI_STRINGS_MY.NO_SCRIPT_YET}
               </div>
-          }
+          )}
           {isProofreading && <LoadingSpinner message={UI_STRINGS_MY.MESSAGE_PROOFREADING_LOADING} />}
           {proofreadingError && <ErrorMessage message={proofreadingError} />}
           {proofreadScript && !isProofreading && (
