@@ -334,7 +334,7 @@ const App: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="text-white text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity">
-                AppName
+                News Content writing Unit 
               </Link>
             </div>
             <div className="hidden md:block">
@@ -343,20 +343,20 @@ const App: React.FC = () => {
                   to="/"
                   className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  GenerateScript
+                  Generate 
                 </Link>
                 <Link
                   to="/content-optimizer"
                   className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  OptimizeContent
+                  Analyze Content
                 </Link>
                 {/* Placeholder for Proofread & Edit - adjust link as needed */}
                 <Link
                   to="/" // Assuming it links to a relevant page or main page for now
                   className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  ProofreadEdit
+                  Editor Proof
                 </Link>
               </div>
             </div>
