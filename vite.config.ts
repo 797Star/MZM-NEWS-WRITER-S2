@@ -1,6 +1,6 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => { // Removed mode parameter
     // const env = loadEnv(mode, '.', ''); // loadEnv is not strictly necessary if only relying on VITE_ prefixes
     return {
       // define: {
