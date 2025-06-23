@@ -1,5 +1,5 @@
 import { ScriptLength, ScriptTone, ScriptType, GeneratedScriptResponse, GroundingChunk, ContentAnalysisResult, SentimentValue } from '../types';
-import { getApiKey } from '../services/envConfig';
+import { getApiKey, getNewsApiKey } from '../services/envConfig';
 import { GEMINI_PROOFREADER_SYSTEM_INSTRUCTION } from '../constants';
 
 // Base URL for the Gemini API
@@ -7,7 +7,7 @@ const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/mo
 const GEMINI_MODEL = 'gemini-2.5-flash-preview-04-17';
 
 // News API configuration
-const NEWS_API_KEY = '0bc0cd6aa8e3454fbe05facceec2b331';
+// const NEWS_API_KEY = '0bc0cd6aa8e3454fbe05facceec2b331'; // Replaced by getNewsApiKey()
 const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
 
 // Helper function to get API URL with key
@@ -64,7 +64,11 @@ interface NewsApiArticle {
 const fetchNewsArticles = async (query: string): Promise<{ content: string; sources: GroundingChunk[] }> => {
   // Use a public CORS proxy for browser compatibility (development only)
   const corsProxy = 'https://api.allorigins.win/raw?url=';
-  const url = `${NEWS_API_BASE_URL}/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&pageSize=5&apiKey=${NEWS_API_KEY}`;
+  const newsApiKey = getNewsApiKey();
+  if (!newsApiKey) {
+    throw new Error('News API key is missing. Please configure VITE_NEWS_API_KEY.');
+  }
+  const url = `${NEWS_API_BASE_URL}/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&pageSize=5&apiKey=${newsApiKey}`;
   const proxiedUrl = corsProxy + encodeURIComponent(url);
   const response = await fetch(proxiedUrl);
   if (!response.ok) {
