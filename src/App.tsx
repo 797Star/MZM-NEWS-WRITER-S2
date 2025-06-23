@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from './services/supabaseClient';
-import { Session } from '@supabase/supabase-js';
+// import { supabase } from './services/supabaseClient'; // Supabase client for auth
+// import { Session } from '@supabase/supabase-js'; // Session type
 import { InputMode, GeneratedScriptResponse, GroundingChunk, ScriptLength, ScriptTone, ScriptType } from './types';
 import { UI_STRINGS_MY } from './constants';
 import InputSelector from './components/InputSelector';
@@ -14,8 +14,8 @@ import ScriptLengthSelector from './components/ScriptLengthSelector';
 import ScriptToneSelector from './components/ScriptToneSelector';
 import ScriptTypeSelector from './components/ScriptTypeSelector';
 import DisclaimerMessage from './components/DisclaimerMessage';
-import LoginScreen from './components/LoginScreen';
-import UserProfile from './components/UserProfile';
+// import LoginScreen from './components/LoginScreen'; // To be removed
+// import UserProfile from './components/UserProfile'; // To be removed
 import {
   generateScriptFromFileContent,
   generateScriptFromUrl,
@@ -24,13 +24,13 @@ import {
   proofreadScriptWithAI,
 } from './services/geminiService';
 import { getApiKey, isApiKeyValid } from './services/envConfig';
-import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom'; // Removed useNavigate
-import UpdatePasswordScreen from './components/UpdatePasswordScreen';
+import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom';
+// import UpdatePasswordScreen from './components/UpdatePasswordScreen'; // To be removed
 import ContentOptimizerScreen from './components/ContentOptimizerScreen';
 
 const App: React.FC = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  // const [session, setSession] = useState<Session | null>(null); // Auth state
+  // const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true); // Auth loading state
   const [apiKeyExists, setApiKeyExists] = useState<boolean>(false);
   const [selectedInputMode, setSelectedInputMode] = useState<InputMode>(InputMode.FILE);
   const [selectedScriptLength, setSelectedScriptLength] = useState<ScriptLength>(ScriptLength.STANDARD);
@@ -53,24 +53,24 @@ const App: React.FC = () => {
   const [isProofreading, setIsProofreading] = useState<boolean>(false);
   const [proofreadingError, setProofreadingError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setIsLoadingAuth(true);
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setIsLoadingAuth(false);
-    });
+  // useEffect(() => { // Auth effect
+  //   setIsLoadingAuth(true);
+  //   supabase.auth.getSession().then(({ data: { session } }) => {
+  //     setSession(session);
+  //     setIsLoadingAuth(false);
+  //   });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (_event, session) => {
-        setSession(session);
-      }
-    );
+  //   const { data: authListener } = supabase.auth.onAuthStateChange(
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //     (_event, session) => {
+  //       setSession(session);
+  //     }
+  //   );
 
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
-  }, []);
+  //   return () => {
+  //     authListener?.subscription?.unsubscribe();
+  //   };
+  // }, []);
 
   useEffect(() => {
     const checkApiKey = () => {
@@ -319,22 +319,23 @@ const App: React.FC = () => {
     return UI_STRINGS_MY.GENERATE_SCRIPT_BUTTON;
   };
 
-  if (isLoadingAuth) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <LoadingSpinner message="Authenticating..." />
-      </div>
-    );
-  }
+  // if (isLoadingAuth) { // Removed auth loading check
+  //   return (
+  //     <div className="min-h-screen flex justify-center items-center">
+  //       <LoadingSpinner message="Authenticating..." />
+  //     </div>
+  //   );
+  // }
 
-  const ProtectedLayout = () => (
-    <div className="min-h-screen flex flex-col bg-neutral-100"> {/* Changed to flex-col and global bg */}
-      <header className="bg-gradient-deep-blue shadow-lg"> {/* Changed to gradient */}
+  // const ProtectedLayout = () => ( // To be replaced by a simpler layout
+  const AppLayout = () => ( // Renamed and simplified
+    <div className="min-h-screen flex flex-col bg-neutral-100">
+      <header className="bg-gradient-deep-blue shadow-lg">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="text-white text-xl sm:text-2xl font-bold hover:opacity-90 transition-opacity">
-                News Content writing Unit 
+                News Content writing Unit
               </Link>
             </div>
             <div className="hidden md:block">
@@ -343,7 +344,7 @@ const App: React.FC = () => {
                   to="/"
                   className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Generate 
+                  Generate
                 </Link>
                 <Link
                   to="/content-optimizer"
@@ -351,7 +352,6 @@ const App: React.FC = () => {
                 >
                   Analyze Content
                 </Link>
-                {/* Placeholder for Proofread & Edit - adjust link as needed */}
                 <Link
                   to="/" // Assuming it links to a relevant page or main page for now
                   className="text-neutral-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -364,7 +364,6 @@ const App: React.FC = () => {
             <div className="-mr-2 flex md:hidden">
               <button type="button" className="bg-primary-dark inline-flex items-center justify-center p-2 rounded-md text-neutral-300 hover:text-white hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary-dark focus:ring-white">
                 <span className="sr-only">Open main menu</span>
-                {/* Icon for menu (Heroicon - menu) */}
                 <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
@@ -374,9 +373,8 @@ const App: React.FC = () => {
         </nav>
       </header>
 
-      {/* Content below header */}
-      <div className="flex-grow py-8 sm:py-12 px-4 sm:px-6 lg:px-8"> {/* Original padding for content area */}
-        {session && session.user && <UserProfile user={session.user} />}
+      <div className="flex-grow py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        {/* {session && session.user && <UserProfile user={session.user} />} // UserProfile removed */}
         <DisclaimerMessage />
         <Outlet />
       </div>
@@ -388,7 +386,6 @@ const App: React.FC = () => {
   );
 
   const MainAppContent = () => (
-    // MainAppContent's own background and max-width are still relevant for the content it holds
     <main className="max-w-4xl mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-xl border border-neutral-200">
       {error === UI_STRINGS_MY.ERROR_API_KEY_MISSING && !isLoading && (
          <ErrorMessage message={UI_STRINGS_MY.ERROR_API_KEY_MISSING} />
@@ -498,22 +495,13 @@ const App: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/" replace />} />
-      <Route path="/update-password" element={<UpdatePasswordScreen />} />
-      <Route
-        path="/"
-        element={
-          session ? (
-            <ProtectedLayout />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      >
+      {/* <Route path="/login" element={<LoginScreen />} /> // Removed login route */}
+      {/* <Route path="/update-password" element={<UpdatePasswordScreen />} /> // Removed update password route */}
+      <Route path="/" element={<AppLayout />}> {/* Simplified main layout */}
         <Route index element={<MainAppContent />} />
         <Route path="content-optimizer" element={<ContentOptimizerScreen />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} /> {/* Catch-all redirects to home */}
     </Routes>
   );
 };
