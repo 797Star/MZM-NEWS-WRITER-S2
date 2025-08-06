@@ -4,7 +4,7 @@ import { GEMINI_PROOFREADER_SYSTEM_INSTRUCTION } from '../constants';
 
 // Base URL for the Gemini API
 const GEMINI_API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
-const GEMINI_MODEL = 'gemini-2.5-flash-preview-04-17';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 // News API configuration
 // const NEWS_API_KEY = '0bc0cd6aa8e3454fbe05facceec2b331'; // Replaced by getNewsApiKey()
